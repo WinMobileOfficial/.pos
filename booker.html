@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AL-HAFIZ TRADERS | POS SYSTEM</title>
+    <title>AL-HAFIZ TRADERS | FULL DMS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; }
-        .nav-item { text-align: center; color: #94a3b8; flex: 1; cursor: pointer; transition: 0.2s; }
+        body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 1000; }
+        .nav-item { text-align: center; color: #94a3b8; flex: 1; cursor: pointer; }
         .nav-item.active { color: #2563eb; }
-        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+        .nav-item i { font-size: 1.2rem; display: block; }
         .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .tab-content { display: none; padding-bottom: 100px; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .progress-ring { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(#2563eb 48%, #e2e8f0 0); display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative; }
-        .progress-ring::after { content: ""; position: absolute; width: 100px; height: 100px; background: white; border-radius: 50%; }
-        .progress-text { position: relative; z-index: 10; font-weight: 900; font-size: 1.2rem; color: #1e293b; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -28,214 +25,170 @@
 <div id="main-container">
 
     <div id="home" class="tab-content active">
-        <div class="bg-white p-5 flex items-center justify-between shadow-sm border-b">
-            <div class="flex items-center gap-3">
-                <div class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">W</div>
-                <div>
-                    <h2 class="font-black text-gray-900 leading-tight text-lg italic">Mohammad Waqar</h2>
-                    <p class="text-[11px] text-blue-600 font-bold tracking-tighter uppercase">ID: D00420B1 | Route: Pindi</p>
+        <div class="bg-blue-600 p-6 text-white rounded-b-[2.5rem] shadow-lg">
+            <div class="flex justify-between items-start">
+                <div><h2 class="text-xl font-black italic">Waqar Ahmed</h2><p class="text-xs opacity-80">Sales Officer | Al-Hafiz</p></div>
+                <div class="bg-white/20 p-2 rounded-full"><i class="fa-solid fa-user"></i></div>
+            </div>
+            <div class="mt-6 bg-white/10 p-4 rounded-2xl flex justify-between">
+                <div class="text-center">
+                    <p class="text-[10px] uppercase font-bold">Today Sale</p>
+                    <p class="font-black">Rs 77,460</p>
                 </div>
-            </div>
-            <i class="fa-solid fa-bell text-gray-400 text-xl"></i>
-        </div>
-
-        <div class="m-5 bg-white p-6 rounded-[2rem] shadow-xl text-center border border-gray-100">
-            <h3 class="text-xs font-black text-gray-500 mb-5 uppercase tracking-widest text-left px-2">Visit Productivity</h3>
-            <div class="progress-ring">
-                <span class="progress-text">24/50</span>
-            </div>
-            <p class="mt-4 text-[10px] font-bold text-gray-400 italic underline">Daily Target 48% Completed</p>
-        </div>
-
-        <div class="mx-5 bg-white p-5 rounded-[2rem] shadow-lg border border-gray-100">
-            <h3 class="text-xs font-black text-gray-500 mb-4 uppercase">Weekly Sales Trend</h3>
-            <div class="h-32 flex items-end justify-between px-2 gap-2">
-                <div class="w-full bg-blue-100 rounded-t-xl" style="height: 40%;"></div>
-                <div class="w-full bg-blue-200 rounded-t-xl" style="height: 65%;"></div>
-                <div class="w-full bg-blue-300 rounded-t-xl" style="height: 35%;"></div>
-                <div class="w-full bg-blue-600 rounded-t-xl shadow-lg" style="height: 85%;"></div>
-                <div class="w-full bg-blue-400 rounded-t-xl" style="height: 55%;"></div>
-            </div>
-            <div class="flex justify-between text-[9px] font-black text-gray-400 mt-3 px-1 uppercase">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+                <div class="border-l border-white/20 px-4 text-center">
+                    <p class="text-[10px] uppercase font-bold">Productive</p>
+                    <p class="font-black">24/50</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="journey" class="tab-content">
-        <div class="bg-blue-600 p-6 text-white sticky top-0 z-50 rounded-b-[2rem] shadow-xl">
-            <h2 class="text-xl font-black italic">JOURNEY PLAN</h2>
-            <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Route: North-04 | Monday</p>
-        </div>
-        <div class="p-5 space-y-4" id="journeyList">
-            </div>
+    <div id="journey" class="tab-content p-4">
+        <h2 class="font-black text-gray-800 mb-4 uppercase italic">Route Plan (Monday)</h2>
+        <div id="journeyList" class="space-y-3"></div>
     </div>
 
     <div id="visit" class="tab-content">
-        <div class="bg-gray-900 p-6 text-white shadow-2xl sticky top-0 z-50">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-[10px] font-black bg-blue-600 px-3 py-1 rounded-full uppercase italic" id="selectedShopName">SELECT SHOP FIRST</span>
-                <i class="fa-solid fa-cart-shopping text-blue-400"></i>
-            </div>
+        <div class="bg-slate-900 p-6 text-white sticky top-0 z-50">
+            <p id="selectedShop" class="text-[10px] font-black text-blue-400 uppercase mb-1 italic">Select Store From Journey</p>
             <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Current Order Value</p>
-                    <h2 class="text-3xl font-black italic">Rs <span id="cartTotal">0</span></h2>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] font-black">ITEMS: <span id="itemCount" class="text-blue-400">0</span></p>
-                    <p class="text-[10px] font-black">UNITS: <span id="unitCount" class="text-blue-400">0</span></p>
-                </div>
+                <div><p class="text-[10px] font-bold opacity-50 uppercase tracking-tighter">Net Total</p><h2 class="text-3xl font-black italic">Rs <span id="cartTotal">0</span></h2></div>
+                <div class="text-right"><p class="text-[10px] font-bold">CTN: <span id="cartons" class="text-blue-400">0</span></p><p class="text-[10px] font-bold">PCS: <span id="pcs" class="text-blue-400">0</span></p></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 p-4" id="productGrid"></div>
+        <div class="fixed bottom-[80px] w-full px-4 pointer-events-none"><button onclick="finalizeOrder()" class="pointer-events-auto w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl">SUBMIT ORDER</button></div>
+    </div>
+
+    <div id="tagging" class="tab-content p-4">
+        <div class="bg-white p-6 rounded-3xl shadow-sm">
+            <h3 class="font-black text-gray-800 uppercase mb-4"><i class="fa-solid fa-location-dot mr-2 text-red-500"></i> Tag New Shop</h3>
+            <input type="text" placeholder="Shop Name" class="w-full border-b p-3 mb-4 outline-none font-bold">
+            <input type="text" placeholder="Owner Name" class="w-full border-b p-3 mb-6 outline-none">
+            <button class="w-full bg-gray-900 text-white py-4 rounded-2xl font-black uppercase text-xs">Save with GPS Location</button>
+        </div>
+    </div>
+
+    <div id="more" class="tab-content">
+        <div class="p-6 bg-white border-b mb-4"><h2 class="font-black text-gray-800 italic">AL-HAFIZ MANAGEMENT</h2></div>
+        
+        <div class="grid grid-cols-3 gap-4 p-4">
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-blue-100 text-blue-600"><i class="fa-solid fa-calendar-check"></i></div>
+                <span class="text-[9px] font-black uppercase">Attendance</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-red-100 text-red-600"><i class="fa-solid fa-rotate-left"></i></div>
+                <span class="text-[9px] font-black uppercase">Returns</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-emerald-100 text-emerald-600"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <span class="text-[9px] font-black uppercase">Recovery</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-orange-100 text-orange-600"><i class="fa-solid fa-wallet"></i></div>
+                <span class="text-[9px] font-black uppercase">Expense</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-purple-100 text-purple-600"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <span class="text-[9px] font-black uppercase">Stock</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="card-icon bg-pink-100 text-pink-600"><i class="fa-solid fa-tower-broadcast"></i></div>
+                <span class="text-[9px] font-black uppercase">Broadcast</span>
             </div>
         </div>
 
-        <div class="flex gap-3 p-4 overflow-x-auto no-scrollbar bg-white sticky top-[136px] z-40 border-b">
-            <button class="bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase">All</button>
-            <button class="bg-gray-100 text-gray-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase">Snacks</button>
-            <button class="bg-gray-100 text-gray-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase">Biscuits</button>
-            <button class="bg-gray-100 text-gray-500 px-5 py-2 rounded-xl text-[10px] font-black uppercase">Beverages</button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 p-5" id="productGrid">
+        <div class="m-4 bg-gray-900 text-white p-6 rounded-[2rem] shadow-2xl">
+            <div class="flex justify-between items-center border-b border-white/10 pb-4 mb-4">
+                <div><p class="text-[10px] opacity-50 uppercase">Stock Asset</p><h4 class="text-xl font-black">Rs 182,000</h4></div>
+                <div class="text-right"><p class="text-[10px] opacity-50 uppercase">Zakat (2.5%)</p><h4 class="text-xl font-black text-yellow-400">Rs 4,550</h4></div>
             </div>
-
-        <div class="fixed bottom-[85px] left-0 w-full px-5 pointer-events-none">
-            <button onclick="finalizeOrder()" class="pointer-events-auto w-full bg-emerald-600 text-white py-4 rounded-2xl shadow-2xl font-black text-sm uppercase flex justify-between px-6 items-center">
-                <span>Confirm Order</span>
-                <i class="fas fa-check-circle"></i>
-            </button>
+            <div class="flex justify-between items-center">
+                <div><p class="text-[10px] opacity-50 uppercase italic font-bold">Net Profit Today</p><h4 class="text-xl font-black text-emerald-400">Rs 760</h4></div>
+                <button onclick="alert('Downloading Excel...')" class="bg-white/10 p-3 rounded-xl"><i class="fa-solid fa-file-excel text-green-400"></i></button>
+            </div>
         </div>
     </div>
 
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('home', this)">
-        <i class="fa-solid fa-house-chimney"></i><span>Home</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('journey', this)">
-        <i class="fa-solid fa-map-location-dot"></i><span>Journey</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('visit', this)">
-        <i class="fa-solid fa-file-invoice"></i><span>Booking</span>
-    </div>
-    <div class="nav-item">
-        <i class="fa-solid fa-tag"></i><span>Tagging</span>
-    </div>
-    <div class="nav-item">
-        <i class="fa-solid fa-bars"></i><span>More</span>
-    </div>
+    <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i><span>Home</span></div>
+    <div class="nav-item" onclick="switchTab('journey', this)"><i class="fa-solid fa-route"></i><span>Journey</span></div>
+    <div class="nav-item" onclick="switchTab('visit', this)"><i class="fa-solid fa-plus-circle"></i><span>Order</span></div>
+    <div class="nav-item" onclick="switchTab('tagging', this)"><i class="fa-solid fa-shop"></i><span>Tag</span></div>
+    <div class="nav-item" onclick="switchTab('more', this)"><i class="fa-solid fa-grid-2"></i><i class="fa-solid fa-bars"></i><span>More</span></div>
 </div>
 
 <script>
-    // --- MOCK DATA ---
     const shops = [
-        { id: 1, name: "Al-Hafiz Karyana Store", area: "Main Bazaar", dist: "0.02 KM", last: "Rs 4,500" },
-        { id: 2, name: "Malik Shakir KS", area: "Station Road", dist: "0.45 KM", last: "Rs 12,200" },
-        { id: 3, name: "Bismillah General Store", area: "Chiniot Road", dist: "1.2 KM", last: "Rs 800" },
-        { id: 4, name: "Haji Super Market", area: "Pindi Road", dist: "2.1 KM", last: "Rs 30,000" }
+        { id: 1, name: "Al-Hafiz Karyana", dist: "0.02 KM" },
+        { id: 2, name: "Malik Shakir KS", dist: "0.45 KM" },
+        { id: 3, name: "Bismillah Store", dist: "1.1 KM" }
     ];
-
     const products = [
-        { id: 1, name: "Sada Papar (S)", price: 600, img: "https://via.placeholder.com/150/f1f5f9/000000?text=S-Papar" },
-        { id: 2, name: "Masala Papar (L)", price: 1200, img: "https://via.placeholder.com/150/f1f5f9/000000?text=M-Papar" },
-        { id: 3, name: "Choco Biscuit", price: 450, img: "https://via.placeholder.com/150/f1f5f9/000000?text=Biscuit" },
-        { id: 4, name: "Cooking Oil 1L", price: 580, img: "https://via.placeholder.com/150/f1f5f9/000000?text=Oil" }
+        { id: 1, name: "Sada Papar (S)", price: 600, img: "https://via.placeholder.com/80?text=Papar" },
+        { id: 2, name: "Masala Papar (L)", price: 1200, img: "https://via.placeholder.com/80?text=Masala" },
+        { id: 3, name: "Choco Biks", price: 450, img: "https://via.placeholder.com/80?text=Choco" }
     ];
-
     let cart = [];
 
-    // --- NAVIGATION LOGIC ---
     function switchTab(tabId, el) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
-        window.scrollTo(0,0);
     }
 
-    // --- JOURNEY RENDER ---
     function renderJourney() {
-        const list = document.getElementById('journeyList');
-        list.innerHTML = shops.map(s => `
-            <div onclick="selectShop('${s.name}')" class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center active:scale-95 transition-transform">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center"><i class="fa-solid fa-store"></i></div>
-                    <div>
-                        <h4 class="font-black text-xs text-gray-800 uppercase italic">${s.name}</h4>
-                        <p class="text-[10px] text-gray-400 font-bold">${s.area} • Last: ${s.last}</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">${s.dist}</span>
-                </div>
-            </div>
-        `).join('');
+        document.getElementById('journeyList').innerHTML = shops.map(s => `
+            <div onclick="selectShop('${s.name}')" class="bg-white p-4 rounded-2xl flex justify-between items-center border border-gray-100 shadow-sm active:bg-gray-50">
+                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">S</div>
+                <div><h4 class="font-black text-xs text-gray-800 uppercase">${s.name}</h4><p class="text-[9px] text-gray-400 font-bold">Area: North | ${s.dist}</p></div></div>
+                <i class="fa-solid fa-chevron-right text-gray-300"></i>
+            </div>`).join('');
     }
 
-    // --- SHOP SELECTION ---
     function selectShop(name) {
-        document.getElementById('selectedShopName').innerText = "Ordering: " + name;
+        document.getElementById('selectedShop').innerText = "Ordering for: " + name;
         switchTab('visit', document.querySelectorAll('.nav-item')[2]);
     }
 
-    // --- CATALOG RENDER ---
     function renderProducts() {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = products.map(p => `
-            <div class="bg-white rounded-[2rem] p-4 shadow-sm border border-gray-100 flex flex-col items-center relative">
-                <img src="${p.img}" class="w-24 h-24 object-contain mb-3">
-                <h4 class="text-[10px] font-black text-gray-700 uppercase text-center mb-1 leading-tight">${p.name}</h4>
-                <p class="text-[11px] font-black text-blue-600 mb-4">Rs ${p.price}</p>
-                <div class="flex items-center gap-3 bg-gray-50 rounded-full p-1 border">
-                    <button onclick="changeQty(${p.id}, -1)" class="w-8 h-8 bg-white rounded-full shadow-sm text-gray-500 font-black">-</button>
-                    <span class="text-xs font-black w-4 text-center" id="qty-${p.id}">0</span>
-                    <button onclick="changeQty(${p.id}, 1)" class="w-8 h-8 bg-blue-600 rounded-full shadow-sm text-white font-black">+</button>
+        document.getElementById('productGrid').innerHTML = products.map(p => `
+            <div class="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex flex-col items-center">
+                <img src="${p.img}" class="mb-2">
+                <h4 class="text-[10px] font-black text-gray-700 uppercase text-center">${p.name}</h4>
+                <p class="text-xs font-black text-blue-600 mb-3">Rs ${p.price}</p>
+                <div class="flex items-center gap-3 bg-gray-100 rounded-full p-1">
+                    <button onclick="updateQty(${p.id}, -1)" class="w-7 h-7 bg-white rounded-full font-black">-</button>
+                    <span id="q-${p.id}" class="text-[10px] font-black w-4 text-center">0</span>
+                    <button onclick="updateQty(${p.id}, 1)" class="w-7 h-7 bg-blue-600 text-white rounded-full font-black">+</button>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
 
-    // --- CART LOGIC ---
-    function changeQty(id, delta) {
+    function updateQty(id, d) {
         let item = cart.find(x => x.id === id);
-        if (!item && delta > 0) {
-            let p = products.find(x => x.id === id);
-            cart.push({ ...p, qty: 1 });
-        } else if (item) {
-            item.qty += delta;
-            if (item.qty <= 0) cart = cart.filter(x => x.id !== id);
-        }
-        updateUI();
-    }
-
-    function updateUI() {
-        let total = 0, units = 0;
-        cart.forEach(i => {
-            total += (i.price * i.qty);
-            units += i.qty;
-            if(document.getElementById(`qty-${i.id}`)) document.getElementById(`qty-${i.id}`).innerText = i.qty;
-        });
-        products.forEach(p => {
-            if(!cart.find(x => x.id === p.id)) {
-                if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = "0";
-            }
-        });
+        if (!item && d > 0) cart.push({ ...products.find(x => x.id === id), qty: 1 });
+        else if (item) { item.qty += d; if (item.qty <= 0) cart = cart.filter(x => x.id !== id); }
+        
+        let total = 0, pcs = 0;
+        cart.forEach(i => { total += (i.price * i.qty); pcs += i.qty; });
         document.getElementById('cartTotal').innerText = total.toLocaleString();
-        document.getElementById('itemCount').innerText = cart.length;
-        document.getElementById('unitCount').innerText = units;
+        document.getElementById('pcs').innerText = pcs;
+        document.getElementById('cartons').innerText = Math.floor(pcs/12); // Assuming 12 pcs per carton
+        products.forEach(p => { 
+            const c = cart.find(x => x.id === p.id);
+            document.getElementById(`q-${p.id}`).innerText = c ? c.qty : 0;
+        });
     }
 
-    function finalizeOrder() {
-        if(cart.length === 0) return alert("Haji Sahab, pehle maal to select karein!");
-        alert("Order Saved Successfully for " + document.getElementById('selectedShopName').innerText);
-        cart = [];
-        updateUI();
-    }
+    function finalizeOrder() { alert("Order Submitted!"); cart = []; updateQty(0,0); }
 
-    // INITIALIZE
-    renderJourney();
-    renderProducts();
+    renderJourney(); renderProducts();
 </script>
 </body>
-</html>
+    </html>
+    
