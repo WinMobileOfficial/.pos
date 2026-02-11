@@ -3,73 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda Pro Ledger | Admin</title>
+    <title>Vanda Management System | Final Fix</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --gray: #5f6368; }
-        body { font-family: 'Roboto', Arial, sans-serif; margin: 0; background: #f1f3f4; color: #202124; padding: 10px; }
+        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
         
-        /* Header Section */
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); margin-bottom: 15px; }
-        h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; }
-
-        /* Form Styling */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; outline: none; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
+        /* Dashboard Card */
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-        button { flex: 1; min-width: 120px; cursor: pointer; padding: 12px; border: none; border-radius: 8px; font-weight: 600; transition: 0.2s; }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        button { cursor: pointer; padding: 10px; border: none; border-radius: 6px; font-weight: 600; flex: 1; transition: 0.2s; }
         .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 16px; }
         .btn-excel { background: #e6f4ea; color: #1e8e3e; border: 1px solid #1e8e3e; }
         .btn-print { background: var(--primary); color: white; }
-        
-        /* Table Responsive Container */
-        .table-container { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #f8f9fa; color: var(--gray); font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f1f3f4; }
-        tr:hover { background: #f8f9fa; }
-        
-        .rem-badge { background: #fce8e6; color: var(--danger); padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-        .pay-text { color: #1e8e3e; font-weight: bold; }
+        .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; margin-bottom: 5px; width: 100%; }
+        .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-            h2 { font-size: 1.2rem; }
-        }
+        /* Table Design Fix */
+        .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 700px; }
+        th { background: #f8f9fa; padding: 10px; text-align: left; font-size: 11px; color: #5f6368; border-bottom: 2px solid #eee; }
+        td { padding: 10px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; overflow-wrap: break-word; word-wrap: break-word; }
+        
+        .client-info-block { font-size: 12px; line-height: 1.4; color: #444; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px; }
+        .summary-row { background: #f8f9fa; font-weight: bold; font-size: 14px; }
 
-        /* Print Design */
+        /* 🖨️ PRINT OPTIMIZATION (FOR A4 PAPER) */
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            .card { box-shadow: none; border: none; }
-            table { border: 1px solid #333; }
-            th { background: #eee !important; color: black; border-bottom: 2px solid black; }
-            td { border-bottom: 1px solid #ccc; }
+            body { background: white; padding: 0; margin: 0; }
+            .card { box-shadow: none; padding: 0; }
+            table { width: 100% !important; border: 1px solid #000; table-layout: fixed; }
+            th, td { border: 1px solid #000; padding: 4px; font-size: 10px !important; }
+            .client-info-block { font-size: 9px; }
+            @page { size: portrait; margin: 5mm; }
+            h2 { font-size: 14px; text-align: center; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
 <div class="card no-print">
-    <h2>📦 Vanda Shop Management</h2>
+    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Vanda Management System</h2>
     <div class="form-grid">
         <input type="hidden" id="editIndex" value="-1">
-        <div><label>Date</label><br><input type="date" id="date" style="width:90%"></div>
-        <div><label>Customer Name</label><br><input type="text" id="name" placeholder="E.g. Ali Khan"></div>
-        <div><label>Details / Address</label><br><input type="text" id="contact" placeholder="Phone/CNIC/Location"></div>
-        <div><label>Total Bags</label><br><input type="number" id="totalBags" placeholder="0"></div>
-        <div><label>Delivered</label><br><input type="number" id="delivered" placeholder="0"></div>
-        <div><label>Payment Received</label><br><input type="number" id="payment" placeholder="Rs."></div>
+        <div><label style="font-size:12px;">Date</label><input type="date" id="date"></div>
+        <div><label style="font-size:12px;">Name</label><input type="text" id="name" placeholder="Client Name"></div>
+        <div><label style="font-size:12px;">Phone</label><input type="text" id="phone" placeholder="Phone No."></div>
+        <div><label style="font-size:12px;">CNIC</label><input type="text" id="cnic" placeholder="CNIC No."></div>
+        <div><label style="font-size:12px;">Address</label><input type="text" id="address" placeholder="Village/City"></div>
+        <div><label style="font-size:12px;">Total Bags</label><input type="number" id="totalBags" placeholder="0"></div>
+        <div><label style="font-size:12px;">Delivered</label><input type="number" id="delivered" placeholder="0"></div>
+        <div><label style="font-size:12px;">Payment</label><input type="number" id="payment" placeholder="Rs. Received"></div>
     </div>
     <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save Record</button>
     
     <div class="btn-row">
-        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search Customer..." style="flex: 2;">
-        <button class="btn-excel" onclick="exportExcel()">📊 Excel File</button>
-        <button class="btn-print" onclick="window.print()">🖨️ Print Ledger</button>
+        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search by Name..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <button class="btn-excel" onclick="exportExcel()">📊 Download Excel</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
     </div>
 </div>
 
@@ -77,14 +72,13 @@
     <table id="vandaTable">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Customer Details</th>
-                <th>Contact/Address</th>
-                <th>Total</th>
-                <th>Deliv.</th>
-                <th>Remaining</th>
-                <th>Payment Status</th>
-                <th class="no-print">Manage</th>
+                <th style="width: 80px;">Date</th>
+                <th style="width: 250px;">Customer & Contact Details</th>
+                <th style="width: 60px;">Total</th>
+                <th style="width: 60px;">Deliv.</th>
+                <th style="width: 60px;">Rem.</th>
+                <th style="width: 90px;">Payment</th>
+                <th class="no-print" style="width: 80px;">Manage</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -93,7 +87,9 @@
 </div>
 
 <script>
-    let records = JSON.parse(localStorage.getItem('vanda_pro_v2')) || [];
+    // Storage Key
+    const DB_NAME = 'vanda_final_database_v4';
+    let records = JSON.parse(localStorage.getItem(DB_NAME)) || [];
     document.getElementById('date').valueAsDate = new Date();
 
     function saveData() {
@@ -101,23 +97,29 @@
         const data = {
             date: document.getElementById('date').value,
             name: document.getElementById('name').value,
-            contact: document.getElementById('contact').value,
+            phone: document.getElementById('phone').value,
+            cnic: document.getElementById('cnic').value,
+            address: document.getElementById('address').value,
             total: parseInt(document.getElementById('totalBags').value) || 0,
             deliv: parseInt(document.getElementById('delivered').value) || 0,
             pay: parseInt(document.getElementById('payment').value) || 0
         };
 
-        if(!data.name) return alert("Pehle Customer ka naam likhen!");
+        if(!data.name) {
+            alert("Meharbani karke Customer ka naam likhen!");
+            return;
+        }
 
-        if(index == -1) records.push(data);
-        else {
+        if(index == -1) {
+            records.push(data);
+        } else {
             records[index] = data;
             document.getElementById('editIndex').value = -1;
             document.getElementById('mainBtn').innerText = "💾 Save Record";
             document.getElementById('mainBtn').style.background = "#1e8e3e";
         }
 
-        localStorage.setItem('vanda_pro_v2', JSON.stringify(records));
+        localStorage.setItem(DB_NAME, JSON.stringify(records));
         clearInputs();
         renderTable();
     }
@@ -125,24 +127,29 @@
     function renderTable() {
         const search = document.getElementById('search').value.toLowerCase();
         let html = '';
-        let tT = 0, tD = 0, tR = 0, tP = 0;
+        let sums = {t:0, d:0, r:0, p:0};
 
         records.forEach((r, i) => {
-            if(r.name.toLowerCase().includes(search) || r.contact.toLowerCase().includes(search)) {
+            if(r.name.toLowerCase().includes(search)) {
                 let rem = r.total - r.deliv;
-                tT += r.total; tD += r.deliv; tR += rem; tP += r.pay;
+                sums.t += r.total; sums.d += r.deliv; sums.r += rem; sums.p += r.pay;
 
                 html += `<tr>
                     <td>${r.date}</td>
-                    <td><strong>${r.name}</strong></td>
-                    <td style="font-size:13px; color:#555">${r.contact}</td>
+                    <td>
+                        <strong>${r.name}</strong>
+                        <div class="client-info-block">
+                            📞 ${r.phone} | 🆔 ${r.cnic}<br>
+                            🏠 ${r.address}
+                        </div>
+                    </td>
                     <td>${r.total}</td>
                     <td>${r.deliv}</td>
-                    <td><span class="${rem > 0 ? 'rem-badge' : ''}">${rem}</span></td>
-                    <td class="pay-text">Rs. ${r.pay.toLocaleString()}</td>
+                    <td style="color:red; font-weight:bold;">${rem}</td>
+                    <td style="color:green; font-weight:bold;">Rs. ${r.pay.toLocaleString()}</td>
                     <td class="no-print">
-                        <button style="background:#f1f3f4; color:#1a73e8; margin-right:5px;" onclick="editEntry(${i})">Edit</button>
-                        <button style="background:#fde7e9; color:#d93025;" onclick="deleteEntry(${i})">X</button>
+                        <button class="btn-edit" onclick="editEntry(${i})">Edit</button>
+                        <button class="btn-del" onclick="deleteEntry(${i})">Delete</button>
                     </td>
                 </tr>`;
             }
@@ -150,12 +157,12 @@
 
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('tableFoot').innerHTML = `
-            <tr style="background:#f8f9fa; font-weight:bold;">
-                <td colspan="3">SUMMARY (TOTAL)</td>
-                <td>${tT}</td>
-                <td>${tD}</td>
-                <td style="color:red">${tR}</td>
-                <td style="color:green">Rs. ${tP.toLocaleString()}</td>
+            <tr class="summary-row">
+                <td colspan="2" style="text-align:right">GRAND TOTAL:</td>
+                <td>${sums.t}</td>
+                <td>${sums.d}</td>
+                <td style="color:red">${sums.r}</td>
+                <td style="color:green">Rs. ${sums.p.toLocaleString()}</td>
                 <td class="no-print"></td>
             </tr>`;
     }
@@ -164,7 +171,9 @@
         const r = records[i];
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
-        document.getElementById('contact').value = r.contact;
+        document.getElementById('phone').value = r.phone;
+        document.getElementById('cnic').value = r.cnic;
+        document.getElementById('address').value = r.address;
         document.getElementById('totalBags').value = r.total;
         document.getElementById('delivered').value = r.deliv;
         document.getElementById('payment').value = r.pay;
@@ -175,20 +184,21 @@
     }
 
     function deleteEntry(i) {
-        if(confirm("Kya aap waqai ye entry khatam karna chahte hain?")) {
+        if(confirm("Kya aap waqai ye entry delete karna chahte hain?")) {
             records.splice(i, 1);
-            localStorage.setItem('vanda_pro_v2', JSON.stringify(records));
+            localStorage.setItem(DB_NAME, JSON.stringify(records));
             renderTable();
         }
     }
 
     function clearInputs() {
-        ['name', 'contact', 'totalBags', 'delivered', 'payment'].forEach(id => document.getElementById(id).value = '');
+        ['name','phone','cnic','address','totalBags','delivered','payment'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('date').valueAsDate = new Date();
     }
 
     function exportExcel() {
         var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Vanda_Report_" + new Date().toLocaleDateString() + ".xlsx");
+        XLSX.writeFile(wb, "Vanda_Full_Report.xlsx");
     }
 
     renderTable();
