@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanda Management System | Ledger</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .no-print { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { cursor: pointer; padding: 8px 15px; border: none; border-radius: 4px; color: white; font-weight: bold; }
+        .btn-excel { background-color: #1f6e43; }
+        .btn-print { background-color: #007bff; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: left; }
+        th { background-color: #e9ecef; }
+
+        /* PRINTING LOGIC */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; margin: 0; }
+            table { width: 100%; }
+            /* Har row ko page ke mutabiq adjust karta hai */
+            tr { page-break-inside: avoid; } 
+            h2 { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search Client Name...">
+    <button class="btn-excel" onclick="exportToExcel()">Download Excel</button>
+    <button class="btn-print" onclick="window.print()">Print Page Wise</button>
+</div>   
+
+<div id="printArea">
+    <h2>Vanda Sale Record - Daily Ledger</h2>
+    <table id="vandaTable">
+        <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Client / Father Name</th>
+                <th>Phone / CNIC / Address</th>
+                <th>Total Bags</th>
+                <th>Delivered</th>
+                <th>Remaining</th>
+                <th>Payment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><b>Aslam Khan</b><br>S/O Basharat</td>
+                <td>0300-1112233<br>35202-0000000-0<br>Chak 12-L</td>
+                <td>200</td>
+                <td>50</td>
+                <td><b>150</b></td>
+                <td>Pending: 40k</td>
+            </tr>
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // Excel Download Function
+    function exportToExcel() {
+        var table = document.getElementById("vandaTable");
+        var wb = XLSX.utils.table_to_book(table, {sheet: "Vanda_Records"});
+        XLSX.writeFile(wb, "Vanda_Data_Backup.xlsx");
+    }
+
+    // Search/Filter Function for Custom Print
+    function filterTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("vandaTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1]; // Search in Name column
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
