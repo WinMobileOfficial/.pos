@@ -46,7 +46,6 @@
         .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; flex: 2; justify-content: center; }
         .btn-reset { background: #f1f3f4; color: #5f6368; flex: 1; justify-content: center; }
-        .btn:hover { opacity: 0.9; }
 
         /* Table Design */
         .table-responsive { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
@@ -54,11 +53,10 @@
         thead { background: #f8f9fa; }
         th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; }
         td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
-        tr:hover { background-color: #fcfdfe; }
         
         .badge { padding: 5px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; margin-right: 5px; }
         
-        /* Print Header - Professional Letterhead */
+        /* Print Styles */
         .print-header { display: none; text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
         .print-header h1 { margin: 0; color: #000; font-size: 32px; letter-spacing: 2px; }
 
@@ -93,8 +91,8 @@
             <h4>Vanda Stock</h4>
             <div class="val" id="dispV">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtV" placeholder="Rs" oninput="autoBill()"></span>
-                <span>Limit: <input type="number" id="stV" placeholder="Stock"></span>
+                <span>Set Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
+                <span>Limit: <input type="number" id="stV"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
         </div>
@@ -122,50 +120,19 @@
         <div class="form-title"><i class="fas fa-plus-circle"></i> Create New Sales Order</div>
         <input type="hidden" id="editId">
         <div class="grid-4">
-            <div class="field-group">
-                <label><i class="fas fa-calendar"></i> Date</label>
-                <input type="date" id="date">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-user"></i> Customer Name</label>
-                <input type="text" id="name" placeholder="Full Name">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-phone"></i> Phone Number</label>
-                <input type="text" id="phone" placeholder="03xx-xxxxxxx">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-id-card"></i> CNIC (Optional)</label>
-                <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x">
-            </div>
+            <div class="field-group"><label>Date</label><input type="date" id="date"></div>
+            <div class="field-group"><label>Customer Name</label><input type="text" id="name"></div>
+            <div class="field-group"><label>Phone Number</label><input type="text" id="phone"></div>
+            <div class="field-group"><label>CNIC</label><input type="text" id="cnic"></div>
         </div>
-        <div class="field-group">
-            <label><i class="fas fa-map-marker-alt"></i> Complete Address</label>
-            <input type="text" id="address" placeholder="Village, Tehsil, District info...">
-        </div>
+        <div class="field-group"><label>Address</label><input type="text" id="address"></div>
         <div class="grid-4" style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <div class="field-group">
-                <label>Vanda Qty</label>
-                <input type="number" id="qtyV" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>Mineral Qty</label>
-                <input type="number" id="qtyM" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>UMB Qty</label>
-                <input type="number" id="qtyU" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>Total Receivable</label>
-                <input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800; border:2px solid var(--primary);">
-            </div>
+            <div class="field-group"><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()"></div>
+            <div class="field-group"><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()"></div>
+            <div class="field-group"><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()"></div>
+            <div class="field-group"><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800;"></div>
         </div>
-        <div class="field-group">
-            <label><i class="fas fa-money-bill-wave"></i> Payment Received</label>
-            <input type="number" id="payment" placeholder="Amount Customer Paid">
-        </div>
-        
+        <div class="field-group"><label>Payment Received</label><input type="number" id="payment"></div>
         <div class="action-btns">
             <button class="btn btn-reset" onclick="resetForm()">Reset</button>
             <button class="btn btn-primary" onclick="save()"><i class="fas fa-save"></i> Save Transaction</button>
@@ -183,18 +150,17 @@
         <div class="table-responsive">
             <div class="print-only print-header">
                 <h1>SYSTEM GOVT</h1>
-                <p>Vanda & Mineral Stock Management System - Sales Report</p>
+                <p>Vanda & Mineral Stock Management System</p>
                 <small id="printDate"></small>
             </div>
-
             <table id="mainTable">
                 <thead>
                     <tr>
                         <th width="100">Date</th>
-                        <th width="180">Customer Info</th>
+                        <th width="180">Customer</th>
                         <th width="200">Address</th>
-                        <th width="150">Items Sold</th>
-                        <th>Total Bill</th>
+                        <th width="150">Items</th>
+                        <th>Bill</th>
                         <th>Paid</th>
                         <th>Balance</th>
                         <th class="no-print" width="100">Action</th>
@@ -218,13 +184,10 @@
         const rV = parseInt(document.getElementById('rtV').value) || 0;
         const rM = parseInt(document.getElementById('rtM').value) || 0;
         const rU = parseInt(document.getElementById('rtU').value) || 0;
-        
         const qV = parseInt(document.getElementById('qtyV').value) || 0;
         const qM = parseInt(document.getElementById('qtyM').value) || 0;
         const qU = parseInt(document.getElementById('qtyU').value) || 0;
-        
-        const total = (qV * rV) + (qM * rM) + (qU * rU);
-        document.getElementById('totalBill').value = total;
+        document.getElementById('totalBill').value = (qV * rV) + (qM * rM) + (qU * rU);
     }
 
     async function upSet() {
@@ -234,7 +197,7 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Success: Cloud Stock Updated!");
+        alert("Cloud Stock Updated!");
         autoBill();
     }
 
@@ -252,8 +215,7 @@
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name || !data.date) return alert("Error: Name and Date are required!");
-        
+        if(!data.name || !data.date) return alert("Date and Name required!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
@@ -275,16 +237,16 @@
             gB += (r.total||0); gP += (r.pay||0);
             h += `<tr>
                 <td><b>${r.date}</b></td>
-                <td><b>${r.name}</b><br><small style="color:#666">${r.phone}</small></td>
-                <td><small>${r.address || 'No Address'}</small></td>
+                <td><b>${r.name}</b><br><small>${r.phone}</small></td>
+                <td><small>${r.address || '---'}</small></td>
                 <td>
                     ${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
                     ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
                     ${r.qtyU?`<span class="badge" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}
                 </td>
-                <td><b>Rs. ${r.total.toLocaleString()}</b></td>
-                <td style="color:var(--success)"><b>Rs. ${r.pay.toLocaleString()}</b></td>
-                <td style="color:${balance > 0 ? 'var(--danger)' : 'var(--success)'}"><b>Rs. ${balance.toLocaleString()}</b></td>
+                <td>Rs. ${r.total.toLocaleString()}</td>
+                <td style="color:var(--success)">Rs. ${r.pay.toLocaleString()}</td>
+                <td style="color:${balance > 0 ? 'var(--danger)' : 'var(--success)'}">Rs. ${balance.toLocaleString()}</td>
                 <td class="no-print">
                     <button onclick="edit('${r.id}')" style="border:none; background:#e8f0fe; color:var(--primary); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-edit"></i></button>
                     <button onclick="del('${r.id}')" style="border:none; background:#fce8e6; color:var(--danger); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
@@ -293,15 +255,11 @@
         });
         document.getElementById('tableBody').innerHTML = h;
         document.getElementById('tableFoot').innerHTML = `<tr>
-            <td colspan="3" style="text-align:right">TOTAL SUMMARY:</td>
-            <td>
-                <span style="color:var(--vanda)">V: ${uV}</span> | 
-                <span style="color:var(--mineral)">M: ${uM}</span> | 
-                <span style="color:var(--umb)">U: ${uU}</span>
-            </td>
+            <td colspan="3" style="text-align:right">TOTALS:</td>
+            <td>V:${uV} | M:${uM} | U:${uU}</td>
             <td>Rs. ${gB.toLocaleString()}</td>
-            <td style="color:var(--success)">Rs. ${gP.toLocaleString()}</td>
-            <td style="color:var(--danger)">Rs. ${(gB-gP).toLocaleString()}</td>
+            <td>Rs. ${gP.toLocaleString()}</td>
+            <td>Rs. ${(gB-gP).toLocaleString()}</td>
             <td class="no-print"></td>
         </tr>`;
     }
@@ -318,6 +276,7 @@
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone;
+        document.getElementById('cnic').value = r.cnic || '';
         document.getElementById('address').value = r.address || '';
         document.getElementById('qtyV').value = r.qtyV;
         document.getElementById('qtyM').value = r.qtyM;
@@ -327,35 +286,29 @@
         window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Confirm: Delete this record permanently?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
 
     function downloadExcel() {
         const exportData = records.map(r => ({
-            "Order Date": r.date, 
-            "Customer": r.name, 
-            "Contact": r.phone, 
-            "Address": r.address, 
+            "Date": r.date, "Customer": r.name, "Phone": r.phone,
             "Vanda (Bags)": r.qtyV, 
             "Mineral": r.qtyM, 
             "UMB": r.qtyU, 
-            "Total Bill": r.total, 
-            "Received Amount": r.pay, 
-            "Balance": (r.total - r.pay)
+            "Total": r.total, "Paid": r.pay, "Balance": (r.total - r.pay)
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SalesLedger");
-        XLSX.writeFile(wb, "SystemGovt_Full_Backup.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Sales");
+        XLSX.writeFile(wb, "ERP_Backup.xlsx");
     }
 
-    // Refresh aur Live update ke liye updated function
+    // Refresh Fix: Load settings and force input update
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            // Input fields mein values set karna taake refresh par gayab na hon
-            if(settings.V) { document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st; }
-            if(settings.M) { document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st; }
-            if(settings.U) { document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st; }
+            document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st;
+            document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st;
+            document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st;
             render();
             autoBill();
         }
@@ -367,7 +320,7 @@
     });
 
     document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
+    document.getElementById('printDate').innerText = "Report Date: " + new Date().toLocaleString();
 </script>
 </body>
 </html>
