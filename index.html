@@ -17,13 +17,11 @@
          
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #eef2f7; color: var(--dark); line-height: 1.6; }
         
-        /* Sidebar/Header */
         .header { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .header h2 { margin: 0; font-weight: 700; color: var(--primary); font-size: 22px; display: flex; align-items: center; gap: 10px; }
         
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
-        /* Dashboard Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
@@ -32,7 +30,6 @@
         .stat-card input { width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
         .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 12px; }
 
-        /* Forms */
         .glass-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .form-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; }
         
@@ -40,33 +37,25 @@
         .field-group { margin-bottom: 15px; }
         .field-group label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; margin-bottom: 5px; }
         .field-group input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; transition: 0.2s; box-sizing: border-box; }
-        .field-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
         
         .action-btns { display: flex; gap: 12px; margin-top: 10px; }
         .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; flex: 2; justify-content: center; }
         .btn-reset { background: #f1f3f4; color: #5f6368; flex: 1; justify-content: center; }
 
-        /* Table Design */
         .table-responsive { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        thead { background: #f8f9fa; }
-        th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; }
+        th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; background: #f8f9fa; }
         td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
         
         .badge { padding: 5px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; margin-right: 5px; }
         
-        /* Print Styles */
         .print-header { display: none; text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
-        .print-header h1 { margin: 0; color: #000; font-size: 32px; letter-spacing: 2px; }
 
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white; padding: 0; }
-            .container { max-width: 100%; width: 100%; margin: 0; }
-            table { border: 1px solid #000; font-size: 11px; }
-            th, td { border: 1px solid #ccc; padding: 8px; }
             @page { size: landscape; margin: 1cm; }
         }
     </style>
@@ -91,7 +80,7 @@
             <h4>Vanda Stock</h4>
             <div class="val" id="dispV">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
+                <span>Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stV"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
@@ -100,7 +89,7 @@
             <h4>Mineral Stock</h4>
             <div class="val" id="dispM">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
+                <span>Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stM"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
@@ -109,7 +98,7 @@
             <h4>UMB Stock</h4>
             <div class="val" id="dispU">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
+                <span>Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stU"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
@@ -121,18 +110,21 @@
         <input type="hidden" id="editId">
         <div class="grid-4">
             <div class="field-group"><label>Date</label><input type="date" id="date"></div>
-            <div class="field-group"><label>Customer Name</label><input type="text" id="name"></div>
-            <div class="field-group"><label>Phone Number</label><input type="text" id="phone"></div>
-            <div class="field-group"><label>CNIC</label><input type="text" id="cnic"></div>
+            <div class="field-group"><label>Customer Name</label><input type="text" id="name" placeholder="Full Name"></div>
+            <div class="field-group"><label>Phone Number</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
+            <div class="field-group"><label>CNIC (Optional)</label><input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x"></div>
         </div>
-        <div class="field-group"><label>Address</label><input type="text" id="address"></div>
+        <div class="field-group">
+            <label>Complete Address</label>
+            <input type="text" id="address" placeholder="Village, Tehsil, District info...">
+        </div>
         <div class="grid-4" style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <div class="field-group"><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()"></div>
-            <div class="field-group"><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()"></div>
-            <div class="field-group"><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()"></div>
-            <div class="field-group"><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800;"></div>
+            <div class="field-group"><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="0"></div>
+            <div class="field-group"><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()" placeholder="0"></div>
+            <div class="field-group"><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()" placeholder="0"></div>
+            <div class="field-group"><label>Total Receivable</label><input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800; border:2px solid var(--primary);"></div>
         </div>
-        <div class="field-group"><label>Payment Received</label><input type="number" id="payment"></div>
+        <div class="field-group"><label>Payment Received</label><input type="number" id="payment" placeholder="Amount Paid"></div>
         <div class="action-btns">
             <button class="btn btn-reset" onclick="resetForm()">Reset</button>
             <button class="btn btn-primary" onclick="save()"><i class="fas fa-save"></i> Save Transaction</button>
@@ -142,9 +134,7 @@
     <div class="glass-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <div class="form-title" style="margin:0;"><i class="fas fa-list"></i> Transaction Ledger</div>
-            <div class="no-print">
-                <input type="text" id="search" onkeyup="render()" placeholder="🔍 Filter ledger..." style="padding:10px; border-radius:8px; border:1px solid #ddd; width:250px;">
-            </div>
+            <div class="no-print"><input type="text" id="search" onkeyup="render()" placeholder="🔍 Filter ledger..." style="padding:10px; border-radius:8px; border:1px solid #ddd; width:250px;"></div>
         </div>
 
         <div class="table-responsive">
@@ -157,10 +147,10 @@
                 <thead>
                     <tr>
                         <th width="100">Date</th>
-                        <th width="180">Customer</th>
+                        <th width="180">Customer Info</th>
                         <th width="200">Address</th>
-                        <th width="150">Items</th>
-                        <th>Bill</th>
+                        <th width="150">Items Sold</th>
+                        <th>Total Bill</th>
                         <th>Paid</th>
                         <th>Balance</th>
                         <th class="no-print" width="100">Action</th>
@@ -197,7 +187,7 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Cloud Stock Updated!");
+        alert("Success: Cloud Stock Updated!");
         autoBill();
     }
 
@@ -215,7 +205,7 @@
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name || !data.date) return alert("Date and Name required!");
+        if(!data.name || !data.date) return alert("Name and Date are required!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
@@ -238,7 +228,7 @@
             h += `<tr>
                 <td><b>${r.date}</b></td>
                 <td><b>${r.name}</b><br><small>${r.phone}</small></td>
-                <td><small>${r.address || '---'}</small></td>
+                <td><small>${r.address || 'No Address'}</small></td>
                 <td>
                     ${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
                     ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
@@ -254,14 +244,7 @@
             </tr>`;
         });
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr>
-            <td colspan="3" style="text-align:right">TOTALS:</td>
-            <td>V:${uV} | M:${uM} | U:${uU}</td>
-            <td>Rs. ${gB.toLocaleString()}</td>
-            <td>Rs. ${gP.toLocaleString()}</td>
-            <td>Rs. ${(gB-gP).toLocaleString()}</td>
-            <td class="no-print"></td>
-        </tr>`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3">TOTAL SUMMARY:</td><td>V:${uV} M:${uM} U:${uU}</td><td>Rs. ${gB.toLocaleString()}</td><td>Rs. ${gP.toLocaleString()}</td><td>Rs. ${(gB-gP).toLocaleString()}</td><td class="no-print"></td></tr>`;
     }
 
     function resetForm() {
@@ -276,7 +259,6 @@
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone;
-        document.getElementById('cnic').value = r.cnic || '';
         document.getElementById('address').value = r.address || '';
         document.getElementById('qtyV').value = r.qtyV;
         document.getElementById('qtyM').value = r.qtyM;
@@ -286,23 +268,19 @@
         window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Confirm Delete?")) await db.collection("records").doc(id).delete(); }
 
     function downloadExcel() {
         const exportData = records.map(r => ({
-            "Date": r.date, "Customer": r.name, "Phone": r.phone,
-            "Vanda (Bags)": r.qtyV, 
-            "Mineral": r.qtyM, 
-            "UMB": r.qtyU, 
-            "Total": r.total, "Paid": r.pay, "Balance": (r.total - r.pay)
+            "Date": r.date, "Customer": r.name, "Contact": r.phone, "Vanda (Bags)": r.qtyV, "Mineral": r.qtyM, "UMB": r.qtyU, "Total": r.total, "Paid": r.pay, "Balance": (r.total - r.pay)
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Sales");
-        XLSX.writeFile(wb, "ERP_Backup.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "SalesLedger");
+        XLSX.writeFile(wb, "SystemGovt_Backup.xlsx");
     }
 
-    // Refresh Fix: Load settings and force input update
+    // Refresh aur Live update logic
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
@@ -320,7 +298,7 @@
     });
 
     document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('printDate').innerText = "Report Date: " + new Date().toLocaleString();
+    document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
 </script>
 </body>
 </html>
