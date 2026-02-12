@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda Management System | Inventory & Auto-Price</title>
+    <title>Vanda Management System | A4 Print Fixed</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
@@ -11,7 +11,7 @@
         
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
         
-        /* New Inventory Section */
+        /* Inventory Section */
         .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 12px; }
         .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; padding: 4px; font-weight: bold; }
@@ -27,10 +27,11 @@
         .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
         .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
 
+        /* Table Design */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 850px; }
-        th { background: #f8f9fa; padding: 10px; text-align: left; font-size: 11px; color: #5f6368; border-bottom: 2px solid #eee; }
-        td { padding: 10px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; overflow-wrap: break-word; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #5f6368; border-bottom: 2px solid #eee; border-right: 1px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #f1f3f4; border-right: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; }
         
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; }
         .bg-vanda { background: var(--vanda); }
@@ -40,12 +41,33 @@
         .client-info-block { font-size: 12px; line-height: 1.4; color: #444; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px; }
         .summary-row { background: #f8f9fa; font-weight: bold; font-size: 14px; }
 
+        /* 🔥 A4 PRINTING ENGINE FIX 🔥 */
         @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 10mm; /* Sahi A4 margins */
+            }
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            table { width: 100% !important; border: 1px solid #000; }
-            th, td { border: 1px solid #000; padding: 4px; font-size: 10px !important; }
-            @page { size: portrait; margin: 5mm; }
+            body { background: white; padding: 0; margin: 0; }
+            .card { box-shadow: none; border: none; padding: 0; margin: 0; }
+            .table-container { box-shadow: none; overflow: visible; width: 100%; }
+            
+            table { 
+                width: 100% !important; 
+                table-layout: fixed !important; /* Forces columns to stay within A4 */
+                border: 1px solid #000 !important; 
+            }
+            
+            th, td { 
+                border: 1px solid #ccc !important; 
+                padding: 8px 4px !important; 
+                font-size: 11px !important; 
+                word-wrap: break-word !important; /* Lambe text ko next line par bhejega */
+            }
+            
+            th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; }
+            .badge { border: 1px solid #666; color: black !important; background: transparent !important; }
+            .summary-row td { background-color: #eee !important; -webkit-print-color-adjust: exact; font-weight: bold; }
         }
     </style>
 </head>
@@ -91,15 +113,15 @@
         <div><label style="font-size:12px;">Phone</label><input type="text" id="phone" placeholder="Phone No."></div>
         <div><label style="font-size:12px;">Address</label><input type="text" id="address" placeholder="Village/City"></div>
         <div><label style="font-size:12px;">Bags Sold</label><input type="number" id="sold" onkeyup="autoBill()" placeholder="0"></div>
-        <div><label style="font-size:12px;">Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;" placeholder="Auto Calc"></div>
+        <div><label style="font-size:12px;">Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;"></div>
         <div><label style="font-size:12px;">Payment Received</label><input type="number" id="payment" placeholder="Rs."></div>
     </div>
     <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save Record & Update Stock</button>
     
     <div class="btn-row">
-        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search Name or Item..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
         <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
-        <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print A4 Report</button>
     </div>
 </div>
 
@@ -107,14 +129,14 @@
     <table id="vandaTable">
         <thead>
             <tr>
-                <th style="width: 80px;">Date</th>
-                <th style="width: 100px;">Item</th>
-                <th style="width: 200px;">Customer Details</th>
-                <th style="width: 60px;">Bags</th>
-                <th style="width: 80px;">Rate</th>
-                <th style="width: 90px;">Total Bill</th>
-                <th style="width: 90px;">Received</th>
-                <th class="no-print" style="width: 80px;">Manage</th>
+                <th style="width: 12%;">Date</th>
+                <th style="width: 13%;">Item</th>
+                <th style="width: 30%;">Customer Details</th>
+                <th style="width: 8%;">Bags</th>
+                <th style="width: 10%;">Rate</th>
+                <th style="width: 12%;">Total</th>
+                <th style="width: 12%;">Paid</th>
+                <th class="no-print" style="width: 80px;">Action</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -123,8 +145,8 @@
 </div>
 
 <script>
-    const REC_KEY = 'shop_records_v8';
-    const SET_KEY = 'shop_settings_v8';
+    const REC_KEY = 'shop_v8_a4_fix';
+    const SET_KEY = 'settings_v8_a4_fix';
     
     let records = JSON.parse(localStorage.getItem(REC_KEY)) || [];
     let settings = JSON.parse(localStorage.getItem(SET_KEY)) || {
@@ -158,8 +180,7 @@
     function autoBill() {
         let item = document.getElementById('itemType').value;
         let qty = parseInt(document.getElementById('sold').value) || 0;
-        let rate = settings[item].rt;
-        document.getElementById('totalBill').value = qty * rate;
+        document.getElementById('totalBill').value = qty * settings[item].rt;
     }
 
     function saveData() {
@@ -176,7 +197,7 @@
             pay: parseInt(document.getElementById('payment').value) || 0
         };
 
-        if(!data.name || data.sold <= 0) return alert("Pehle data sahi likhen!");
+        if(!data.name || data.sold <= 0) return alert("Please fill data!");
 
         if(index == -1) records.push(data);
         else records[index] = data;
@@ -206,14 +227,11 @@
                 html += `<tr>
                     <td>${r.date}</td>
                     <td><span class="badge ${bClass}">${r.item}</span></td>
-                    <td>
-                        <strong>${r.name}</strong>
-                        <div class="client-info-block">📞 ${r.phone} | 🏠 ${r.address}</div>
-                    </td>
+                    <td><strong>${r.name}</strong><br><small>${r.phone} | ${r.address}</small></td>
                     <td>${r.sold}</td>
                     <td>${r.rate}</td>
-                    <td>Rs.${r.totalBill.toLocaleString()}</td>
-                    <td style="color:green; font-weight:bold;">Rs.${r.pay.toLocaleString()}</td>
+                    <td>${r.totalBill}</td>
+                    <td style="color:green; font-weight:bold;">${r.pay}</td>
                     <td class="no-print">
                         <button class="btn-edit" onclick="editEntry(${i})">Edit</button>
                         <button class="btn-del" onclick="deleteEntry(${i})">X</button>
@@ -225,11 +243,11 @@
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('tableFoot').innerHTML = `
             <tr class="summary-row">
-                <td colspan="3" style="text-align:right">TOTAL:</td>
+                <td colspan="3" style="text-align:right">GRAND TOTAL:</td>
                 <td>${sums.qty}</td>
                 <td>-</td>
-                <td>Rs.${sums.bill.toLocaleString()}</td>
-                <td style="color:green">Rs.${sums.pay.toLocaleString()}</td>
+                <td>${sums.bill}</td>
+                <td style="color:green">${sums.pay}</td>
                 <td class="no-print"></td>
             </tr>`;
     }
@@ -249,7 +267,7 @@
     }
 
     function deleteEntry(i) {
-        if(confirm("Delete entry?")) {
+        if(confirm("Delete record?")) {
             records.splice(i, 1);
             localStorage.setItem(REC_KEY, JSON.stringify(records));
             renderTable();
@@ -263,11 +281,10 @@
 
     function exportExcel() {
         var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Shop_Report.xlsx");
+        XLSX.writeFile(wb, "Shop_Inventory_Report.xlsx");
     }
 
     renderTable();
 </script>
-
 </body>
 </html>
