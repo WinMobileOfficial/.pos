@@ -3,182 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERP PRO | SYSTEM GOVT</title>
+    <title>SYSTEM GOVT | ENTERPRISE ERP</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { 
-            --primary: #1a73e8; --vanda: #673ab7; --mineral: #00bcd4; --umb: #ef6c00; 
-            --success: #1e8e3e; --danger: #d93025; --bg: #f1f3f4; --card: #ffffff;
-        }
-         
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #202124; }
-        
-        /* Header */
-        .header { background: #fff; padding: 12px 30px; border-bottom: 1px solid #dadce0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        
-        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; }
-
-        /* Dashboard Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-top: 5px solid; }
-        .stat-card h4 { margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: #5f6368; }
-        .stat-card .val { font-size: 32px; font-weight: 700; color: #202124; }
-        .stat-card .progress-bar { height: 8px; background: #eee; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .stat-card .progress-fill { height: 100%; width: 0%; transition: 0.5s; }
-        
-        .setup-row { display: flex; gap: 10px; margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 12px; }
-        .setup-row input { width: 60px; border: 1px solid #ddd; border-radius: 4px; padding: 4px; font-weight: bold; }
-
-        /* Professional Form */
-        .glass-card { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .form-header { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        
-        .grid-pro { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .field { display: flex; flex-direction: column; gap: 5px; }
-        .field label { font-size: 12px; font-weight: 600; color: #5f6368; }
-        .field input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; outline: none; transition: 0.2s; font-size: 14px; }
-        .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
-        
-        .billing-box { background: #f8f9fa; border-radius: 12px; padding: 20px; margin: 20px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; border: 1px solid #eee; }
-
-        /* Buttons */
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 14px; }
-        .btn-p { background: var(--primary); color: #fff; }
-        .btn-p:hover { background: #1765cc; box-shadow: 0 4px 10px rgba(26,115,232,0.3); }
-        .btn-s { background: #f1f3f4; color: #3c4043; }
-        
-        /* Table */
-        .table-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        :root { --primary: #0061f2; --secondary: #6900c7; --success: #00ac69; --info: #00cfd5; --warning: #f4a100; --danger: #e81500; --light: #f8f9fa; --dark: #212832; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f2f5f9; margin: 0; color: var(--dark); }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); margin-bottom: 25px; border: none; }
+        .card-header { padding: 15px 20px; border-bottom: 1px solid rgba(33, 40, 50, 0.125); font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .stock-card { padding: 20px; border-radius: 12px; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .stock-card:hover { transform: translateY(-5px); }
+        .stock-val { font-size: 28px; font-weight: 800; margin: 10px 0; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .input-group input { width: 100%; border: 1px solid #ddd; padding: 6px; border-radius: 4px; box-sizing: border-box; font-weight: bold; }
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; }
+        .form-field { display: flex; flex-direction: column; gap: 5px; }
+        .form-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #69707a; }
+        .form-field input { padding: 10px; border: 1px solid #c5ccd6; border-radius: 6px; outline: none; transition: 0.2s; }
+        .form-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(0, 97, 242, 0.25); }
+        .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-post { background: var(--primary); color: white; width: 100%; justify-content: center; margin-top: 15px; padding: 15px; font-size: 16px; }
+        .btn-post:hover { background: #0052cc; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 15px; text-align: left; font-size: 13px; color: #5f6368; border-bottom: 2px solid #eee; }
-        td { padding: 15px; border-bottom: 1px solid #f1f3f4; font-size: 14px; }
-        tr:hover { background: #fafafa; }
-        
-        .badge-item { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; color: white; display: inline-block; margin: 2px; }
-
-        /* Print Styling */
-        .print-only { display: none; }
-        @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; text-align: center; margin-bottom: 40px; }
-            body { background: white; }
-            .container { max-width: 100%; margin: 0; }
-            .table-card { box-shadow: none; border: 1px solid #000; }
-            th { background: #eee !important; color: #000; border: 1px solid #000; }
-            td { border: 1px solid #eee; }
-        }
+        th { background: #f2f5f9; padding: 15px; text-align: left; font-size: 12px; font-weight: 800; color: #4a5568; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: white; display: inline-block; margin: 2px; }
+        .total-summary { background: #f8f9fa; font-weight: 800; font-size: 15px; }
+        @media print { .no-print { display: none !important; } .card { box-shadow: none; border: 1px solid #ddd; } }
     </style>
 </head>
 <body>
 
 <div class="header no-print">
-    <div class="logo"><i class="fas fa-shield-halved"></i> SYSTEM GOVT <span style="font-weight: 300; font-size: 14px; color: #888;">ERP v2.0</span></div>
-    <div style="display:flex; gap:12px;">
-        <button class="btn btn-s" onclick="downloadExcel()"><i class="fas fa-download"></i> EXPORT DATA</button>
-        <button class="btn btn-p" onclick="window.print()"><i class="fas fa-print"></i> PRINT REPORT</button>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <i class="fas fa-university fa-2x"></i>
+        <div>
+            <h2 style="margin:0; font-size:20px;">SYSTEM GOVT</h2>
+            <small style="opacity:0.8;">Vanda Management Enterprise v3.0</small>
+        </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn" style="background:var(--success); color:white;" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Export Ledger</button>
+        <button class="btn" style="background:white; color:var(--primary);" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
     </div>
 </div>
 
 <div class="container">
-    <div class="stats-grid no-print">
-        <div class="stat-card" style="border-top-color: var(--vanda);">
-            <h4>Vanda Inventory</h4>
-            <div class="val" id="dispV">0</div>
-            <div class="progress-bar"><div id="barV" class="progress-fill" style="background: var(--vanda);"></div></div>
-            <div class="setup-row">
-                <span>Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
-                <span>Total Stock: <input type="number" id="stV"></span>
-                <button type="button" onclick="upSet()" style="background:none; border:none; cursor:pointer; color:var(--primary);"><i class="fas fa-sync"></i></button>
+    <div class="grid-3 no-print">
+        <div class="card stock-card" style="border-left: 5px solid var(--secondary);">
+            <h4 style="margin:0; color:var(--secondary);">VANDA STOCK</h4>
+            <div class="stock-val" id="dispV">0 <small>Bags</small></div>
+            <div class="input-group">
+                <div class="form-field"><label>SET RATE</label><input type="number" id="rtV" oninput="autoBill()"></div>
+                <div class="form-field"><label>LIMIT</label><input type="number" id="stV"></div>
             </div>
+            <button class="btn" style="width:100%; margin-top:10px; background:var(--secondary); color:white;" onclick="upSet()">Update Cloud</button>
         </div>
-        <div class="stat-card" style="border-top-color: var(--mineral);">
-            <h4>Mineral Inventory</h4>
-            <div class="val" id="dispM">0</div>
-            <div class="progress-bar"><div id="barM" class="progress-fill" style="background: var(--mineral);"></div></div>
-            <div class="setup-row">
-                <span>Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
-                <span>Total Stock: <input type="number" id="stM"></span>
-                <button type="button" onclick="upSet()" style="background:none; border:none; cursor:pointer; color:var(--primary);"><i class="fas fa-sync"></i></button>
+        <div class="card stock-card" style="border-left: 5px solid var(--info);">
+            <h4 style="margin:0; color:var(--info);">MINERAL STOCK</h4>
+            <div class="stock-val" id="dispM">0 <small>Bags</small></div>
+            <div class="input-group">
+                <div class="form-field"><label>SET RATE</label><input type="number" id="rtM" oninput="autoBill()"></div>
+                <div class="form-field"><label>LIMIT</label><input type="number" id="stM"></div>
             </div>
+            <button class="btn" style="width:100%; margin-top:10px; background:var(--info); color:white;" onclick="upSet()">Update Cloud</button>
         </div>
-        <div class="stat-card" style="border-top-color: var(--umb);">
-            <h4>UMB Inventory</h4>
-            <div class="val" id="dispU">0</div>
-            <div class="progress-bar"><div id="barU" class="progress-fill" style="background: var(--umb);"></div></div>
-            <div class="setup-row">
-                <span>Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
-                <span>Total Stock: <input type="number" id="stU"></span>
-                <button type="button" onclick="upSet()" style="background:none; border:none; cursor:pointer; color:var(--primary);"><i class="fas fa-sync"></i></button>
+        <div class="card stock-card" style="border-left: 5px solid var(--warning);">
+            <h4 style="margin:0; color:var(--warning);">UMB STOCK</h4>
+            <div class="stock-val" id="dispU">0 <small>Bags</small></div>
+            <div class="input-group">
+                <div class="form-field"><label>SET RATE</label><input type="number" id="rtU" oninput="autoBill()"></div>
+                <div class="form-field"><label>LIMIT</label><input type="number" id="stU"></div>
             </div>
+            <button class="btn" style="width:100%; margin-top:10px; background:var(--warning); color:white;" onclick="upSet()">Update Cloud</button>
         </div>
     </div>
 
-    <div class="glass-card no-print">
-        <div class="form-header"><i class="fas fa-cart-plus"></i> NEW SALES ORDER TRANSACTION</div>
+    <div class="card no-print">
+        <div class="card-header"><i class="fas fa-plus-circle"></i> CREATE NEW SALES ORDER</div>
         <input type="hidden" id="editId">
-        <div class="grid-pro">
-            <div class="field"><label>TRANSACTION DATE</label><input type="date" id="date"></div>
-            <div class="field"><label>CUSTOMER FULL NAME</label><input type="text" id="name" placeholder="Search or Enter Name"></div>
-            <div class="field"><label>CONTACT NUMBER</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
-            <div class="field"><label>CNIC (TAX ID)</label><input type="text" id="cnic" placeholder="13-digit CNIC"></div>
+        <div class="form-grid">
+            <div class="form-field"><label>Date</label><input type="date" id="date"></div>
+            <div class="form-field"><label>Customer Name</label><input type="text" id="name"></div>
+            <div class="form-field"><label>Phone Number</label><input type="text" id="phone"></div>
+            <div class="form-field"><label>CNIC Number</label><input type="text" id="cnic"></div>
+            <div class="form-field" style="grid-column: span 4;"><label>Address</label><input type="text" id="address"></div>
+            <div class="form-field"><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()" value="0"></div>
+            <div class="form-field"><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()" value="0"></div>
+            <div class="form-field"><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()" value="0"></div>
+            <div class="form-field"><label>Total Bill (Rs)</label><input type="number" id="totalBill" readonly style="background:#e9ecef; font-weight:800;"></div>
+            <div class="form-field" style="grid-column: span 2;"><label>Amount Paid (Rs)</label><input type="number" id="payment" oninput="autoBill()" value="0"></div>
+            <div class="form-field" style="grid-column: span 2;"><label>Current Balance (Rs)</label><input type="number" id="liveBalance" readonly style="color:var(--danger); font-weight:800; background:#fef2f2;"></div>
         </div>
-        <div class="field" style="margin-top: 20px;"><label>DELIVERY ADDRESS</label><input type="text" id="address" placeholder="Complete Location Details"></div>
-        
-        <div class="billing-box">
-            <div class="field"><label>VANDA QTY</label><input type="number" id="qtyV" oninput="autoBill()" value="0"></div>
-            <div class="field"><label>MINERAL QTY</label><input type="number" id="qtyM" oninput="autoBill()" value="0"></div>
-            <div class="field"><label>UMB QTY</label><input type="number" id="qtyU" oninput="autoBill()" value="0"></div>
-            <div class="field"><label>GROSS TOTAL (RS)</label><input type="number" id="totalBill" readonly style="font-size: 18px; font-weight: bold; color: var(--primary);"></div>
-        </div>
-
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <div class="field" style="width: 300px;"><label>PAYMENT RECEIVED (CASH)</label><input type="number" id="payment" oninput="autoBill()" placeholder="Enter Amount Paid"></div>
-            <div style="text-align: right;">
-                <button type="button" class="btn btn-s" onclick="resetForm()">DISCARD</button>
-                <button type="button" class="btn btn-p" onclick="save()"><i class="fas fa-check-double"></i> POST TRANSACTION</button>
-            </div>
+        <div style="padding: 0 20px 20px 20px; display: flex; gap: 10px;">
+            <button class="btn" style="background:#6c757d; color:white; flex:1;" onclick="resetForm()">Reset</button>
+            <button class="btn btn-post" style="flex:3;" onclick="save()"><i class="fas fa-save"></i> Post Transaction</button>
         </div>
     </div>
 
-    <div class="table-card">
-        <div class="no-print" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; background: #fff;">
-            <div style="font-weight: 700; color: #5f6368;">MASTER SALES LEDGER</div>
-            <input type="text" id="search" onkeyup="render()" placeholder="Filter by Name or Phone..." style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; width: 300px;">
+    <div class="card">
+        <div class="card-header no-print" style="justify-content: space-between;">
+            <span><i class="fas fa-list"></i> TRANSACTION LEDGER</span>
+            <input type="text" id="search" onkeyup="render()" placeholder="Search Name, Phone or CNIC..." style="padding:8px; border-radius:6px; border:1px solid #ddd; width:250px;">
         </div>
-
-        <div class="print-only">
-            <h1 style="margin:0;">SYSTEM GOVT</h1>
-            <h3 style="margin:5px 0;">Official Sales & Inventory Audit Report</h3>
-            <p id="printTime"></p>
-            <hr>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer & CNIC</th>
+                        <th>Items Sold</th>
+                        <th>Total Bill</th>
+                        <th>Paid</th>
+                        <th>Balance</th>
+                        <th class="no-print">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFoot" class="total-summary"></tfoot>
+            </table>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>REF DATE</th>
-                    <th>CUSTOMER INFO</th>
-                    <th>ADDRESS</th>
-                    <th>ITEMS SUMMARY</th>
-                    <th>TOTAL BILL</th>
-                    <th>PAID</th>
-                    <th>REMAINING</th>
-                    <th class="no-print">ACTIONS</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot" style="background:#f8f9fa; font-weight:800;"></tfoot>
-        </table>
     </div>
 </div>
 
 <script>
-    // Firebase Setup
     const firebaseConfig = { apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY", authDomain: "system-govt.firebaseapp.com", projectId: "system-govt", storageBucket: "system-govt.firebasestorage.app", messagingSenderId: "1033817025402", appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -192,8 +145,11 @@
         const qV = parseInt(document.getElementById('qtyV').value) || 0;
         const qM = parseInt(document.getElementById('qtyM').value) || 0;
         const qU = parseInt(document.getElementById('qtyU').value) || 0;
+        const pay = parseInt(document.getElementById('payment').value) || 0;
+
         const total = (qV * rV) + (qM * rM) + (qU * rU);
         document.getElementById('totalBill').value = total;
+        document.getElementById('liveBalance').value = total - pay;
     }
 
     async function upSet() {
@@ -203,7 +159,7 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Success: Inventory Settings Synchronized!");
+        alert("Cloud Inventory Updated Successfully!");
     }
 
     async function save() {
@@ -220,29 +176,25 @@
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name || !data.date) return alert("Validation Error: Please enter Customer Name and Date");
+        if(!data.name || !data.date) return alert("Error: Name and Date are required!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
 
-    function updateStockUI(usedV, usedM, usedU) {
-        const sets = [['V', usedV], ['M', usedM], ['U', usedU]];
-        sets.forEach(([key, used]) => {
-            const rem = settings[key].st - used;
-            const perc = (rem / settings[key].st) * 100;
-            document.getElementById(`disp${key}`).innerText = rem;
-            document.getElementById(`bar${key}`).style.width = Math.max(0, Math.min(100, perc)) + '%';
-            document.getElementById(`bar${key}`).style.background = perc < 20 ? 'var(--danger)' : (key=='V'?'var(--vanda)':key=='M'?'var(--mineral)':'var(--umb)');
-        });
-    }
-
     function render() {
         const term = document.getElementById('search').value.toLowerCase();
-        const filtered = records.filter(r => (r.name||"").toLowerCase().includes(term) || (r.phone||"").includes(term));
+        const filtered = records.filter(r => 
+            (r.name||"").toLowerCase().includes(term) || 
+            (r.phone||"").includes(term) || 
+            (r.cnic||"").includes(term)
+        );
         
         let uV=0, uM=0, uU=0, gT=0, gP=0;
         records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
-        updateStockUI(uV, uM, uU);
+
+        document.getElementById('dispV').innerHTML = `${settings.V.st - uV} <small>Bags</small>`;
+        document.getElementById('dispM').innerHTML = `${settings.M.st - uM} <small>Bags</small>`;
+        document.getElementById('dispU').innerHTML = `${settings.U.st - uU} <small>Bags</small>`;
 
         let h = '';
         filtered.forEach(r => {
@@ -250,30 +202,28 @@
             gT += r.total; gP += r.pay;
             h += `<tr>
                 <td>${r.date}</td>
-                <td><b>${r.name}</b><br><small style="color:#888">${r.phone || ''}</small></td>
-                <td><small>${r.address || '-'}</small></td>
+                <td><b>${r.name}</b><br><small>${r.cnic || 'No CNIC'}</small></td>
                 <td>
-                    ${r.qtyV?`<span class="badge-item" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
-                    ${r.qtyM?`<span class="badge-item" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
-                    ${r.qtyU?`<span class="badge-item" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}
+                    ${r.qtyV?`<span class="badge" style="background:var(--secondary)">V: ${r.qtyV}</span>`:''}
+                    ${r.qtyM?`<span class="badge" style="background:var(--info)">M: ${r.qtyM}</span>`:''}
+                    ${r.qtyU?`<span class="badge" style="background:var(--warning)">U: ${r.qtyU}</span>`:''}
                 </td>
-                <td>Rs. ${r.total.toLocaleString()}</td>
-                <td style="color:var(--success)">Rs. ${r.pay.toLocaleString()}</td>
-                <td style="${bal>0?'color:var(--danger);font-weight:bold':'color:var(--success)'}">Rs. ${bal.toLocaleString()}</td>
+                <td>${r.total.toLocaleString()}</td>
+                <td style="color:var(--success)">${r.pay.toLocaleString()}</td>
+                <td style="color:${bal>0?'var(--danger)':'var(--success)'}; font-weight:bold">${bal.toLocaleString()}</td>
                 <td class="no-print">
-                    <button onclick="edit('${r.id}')" style="border:none;background:none;cursor:pointer;color:var(--primary)"><i class="fas fa-edit"></i></button>
-                    <button onclick="del('${r.id}')" style="border:none;background:none;cursor:pointer;color:var(--danger);margin-left:10px;"><i class="fas fa-trash"></i></button>
+                    <button onclick="edit('${r.id}')" style="color:var(--primary); border:none; background:none; cursor:pointer;"><i class="fas fa-edit"></i></button>
+                    <button onclick="del('${r.id}')" style="color:var(--danger); border:none; background:none; cursor:pointer; margin-left:10px;"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>`;
         });
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3">CONSOLIDATED SUMMARY</td><td>V:${uV} M:${uM} U:${uU}</td><td>Rs. ${gT.toLocaleString()}</td><td>Rs. ${gP.toLocaleString()}</td><td>Rs. ${(gT-gP).toLocaleString()}</td><td class="no-print"></td></tr>`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="2">NET TOTALS</td><td>V:${uV} M:${uM} U:${uU}</td><td>Rs. ${gT.toLocaleString()}</td><td>Rs. ${gP.toLocaleString()}</td><td>Rs. ${(gT-gP).toLocaleString()}</td><td class="no-print"></td></tr>`;
     }
 
     function resetForm() {
-        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(i => document.getElementById(i).value='');
+        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment','liveBalance'].forEach(i => document.getElementById(i).value='');
         document.getElementById('date').valueAsDate = new Date();
-        autoBill();
     }
 
     function edit(id) {
@@ -281,22 +231,31 @@
         ['date','name','phone','cnic','address','qtyV','qtyM','qtyU','payment'].forEach(f => document.getElementById(f).value = r[f] || '');
         document.getElementById('editId').value = r.id;
         autoBill();
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Permanently delete this transaction?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Confirm Delete?")) await db.collection("records").doc(id).delete(); }
 
     function downloadExcel() {
         const data = records.map(r => ({
-            "Date": r.date, "Customer": r.name, "Vanda (Bags)": r.qtyV, "Mineral": r.qtyM, "UMB": r.qtyU, "Total Bill": r.total, "Paid": r.pay, "Balance": r.total-r.pay
+            "Date": r.date,
+            "Customer Name": r.name,
+            "CNIC": r.cnic || "N/A",
+            "Phone": r.phone || "N/A",
+            "Vanda (Bags)": r.qtyV,
+            "Mineral": r.qtyM,
+            "UMB": r.qtyU,
+            "Total Bill": r.total,
+            "Paid Amount": r.pay,
+            "Balance": r.total - r.pay,
+            "Address": r.address
         }));
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SalesMaster");
-        XLSX.writeFile(wb, "SYSTEM_GOVT_ERP_DATA.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "SalesRecords");
+        XLSX.writeFile(wb, "System_Govt_ERP_Report.xlsx");
     }
 
-    // Real-time Cloud Observers
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
@@ -313,8 +272,6 @@
     });
 
     document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('printTime').innerText = "System Timestamp: " + new Date().toLocaleString();
 </script>
 </body>
-    </html>
-    
+</html>
