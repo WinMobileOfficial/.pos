@@ -30,7 +30,7 @@
         .stat-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; color: #5f6368; }
         .stat-card .val { font-size: 24px; font-weight: 800; margin: 10px 0; }
         .stat-card input { width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
-        .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; pt: 10px; font-size: 12px; }
+        .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 12px; }
 
         /* Forms */
         .glass-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
@@ -91,27 +91,27 @@
     <div class="stats-grid no-print">
         <div class="stat-card" style="border-color: var(--vanda);">
             <h4>Vanda Stock</h4>
-            <div class="val" id="dispV">0 Bags</div>
+            <div class="val" id="dispV">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtV" placeholder="Rs"></span>
+                <span>Set Rate: <input type="number" id="rtV" placeholder="Rs" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stV" placeholder="Stock"></span>
             </div>
-            <button class="btn-lock" onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
         </div>
         <div class="stat-card" style="border-color: var(--mineral);">
             <h4>Mineral Stock</h4>
-            <div class="val" id="dispM">0 Bags</div>
+            <div class="val" id="dispM">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtM"></span>
+                <span>Set Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stM"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
         </div>
         <div class="stat-card" style="border-color: var(--umb);">
             <h4>UMB Stock</h4>
-            <div class="val" id="dispU">0 Bags</div>
+            <div class="val" id="dispU">0</div>
             <div class="footer">
-                <span>Set Rate: <input type="number" id="rtU"></span>
+                <span>Set Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stU"></span>
             </div>
             <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
@@ -196,6 +196,7 @@
                         <th width="150">Items Sold</th>
                         <th>Total Bill</th>
                         <th>Paid</th>
+                        <th>Balance</th>
                         <th class="no-print" width="100">Action</th>
                     </tr>
                 </thead>
@@ -207,23 +208,26 @@
 </div>
 
 <script>
-    // Config
     const firebaseConfig = { apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY", authDomain: "system-govt.firebaseapp.com", projectId: "system-govt", storageBucket: "system-govt.firebasestorage.app", messagingSenderId: "1033817025402", appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
-    // Auto Calculation
     function autoBill() {
+        // Direct input values check for live calculation
+        const rV = parseInt(document.getElementById('rtV').value) || 0;
+        const rM = parseInt(document.getElementById('rtM').value) || 0;
+        const rU = parseInt(document.getElementById('rtU').value) || 0;
+        
         const qV = parseInt(document.getElementById('qtyV').value) || 0;
         const qM = parseInt(document.getElementById('qtyM').value) || 0;
         const qU = parseInt(document.getElementById('qtyU').value) || 0;
-        const total = (qV * settings.V.rt) + (qM * settings.M.rt) + (qU * settings.U.rt);
+        
+        const total = (qV * rV) + (qM * rM) + (qU * rU);
         document.getElementById('totalBill').value = total;
     }
 
-    // Save Stock Settings
     async function upSet() {
         const s = {
             V: {st: parseInt(document.getElementById('stV').value)||0, rt: parseInt(document.getElementById('rtV').value)||0},
@@ -232,9 +236,9 @@
         };
         await db.collection("settings").doc("main").set(s);
         alert("Success: Cloud Stock Updated!");
+        autoBill();
     }
 
-    // Save Transaction
     async function save() {
         const id = document.getElementById('editId').value;
         const data = {
@@ -262,13 +266,13 @@
         let uV=0, uM=0, uU=0, gB=0, gP=0;
         records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
 
-        // Update Dashboard Cards
-        document.getElementById('dispV').innerText = (settings.V.st - uV) + " Bags Left";
-        document.getElementById('dispM').innerText = (settings.M.st - uM) + " Bags Left";
-        document.getElementById('dispU').innerText = (settings.U.st - uU) + " Bags Left";
+        document.getElementById('dispV').innerText = (settings.V.st - uV);
+        document.getElementById('dispM').innerText = (settings.M.st - uM);
+        document.getElementById('dispU').innerText = (settings.U.st - uU);
 
         let h = '';
         filtered.forEach(r => {
+            const balance = (r.total || 0) - (r.pay || 0);
             gB += (r.total||0); gP += (r.pay||0);
             h += `<tr>
                 <td><b>${r.date}</b></td>
@@ -281,6 +285,7 @@
                 </td>
                 <td><b>Rs. ${r.total.toLocaleString()}</b></td>
                 <td style="color:var(--success)"><b>Rs. ${r.pay.toLocaleString()}</b></td>
+                <td style="color:${balance > 0 ? 'var(--danger)' : 'var(--success)'}"><b>Rs. ${balance.toLocaleString()}</b></td>
                 <td class="no-print">
                     <button onclick="edit('${r.id}')" style="border:none; background:#e8f0fe; color:var(--primary); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-edit"></i></button>
                     <button onclick="del('${r.id}')" style="border:none; background:#fce8e6; color:var(--danger); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
@@ -297,6 +302,7 @@
             </td>
             <td>Rs. ${gB.toLocaleString()}</td>
             <td style="color:var(--success)">Rs. ${gP.toLocaleString()}</td>
+            <td style="color:var(--danger)">Rs. ${(gB-gP).toLocaleString()}</td>
             <td class="no-print"></td>
         </tr>`;
     }
@@ -304,6 +310,7 @@
     function resetForm() {
         ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('date').valueAsDate = new Date();
+        autoBill();
     }
 
     function edit(id) {
@@ -327,7 +334,7 @@
         const exportData = records.map(r => ({
             "Order Date": r.date, "Customer": r.name, "Contact": r.phone, "Address": r.address, 
             "Vanda (Bags)": r.qtyV, "Mineral (Bags)": r.qtyM, "UMB (Bags)": r.qtyU, 
-            "Total Bill": r.total, "Received Amount": r.pay, "Balance": r.total - r.pay
+            "Total Bill": r.total, "Received Amount": r.pay, "Balance": (r.total - r.pay)
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
@@ -335,14 +342,14 @@
         XLSX.writeFile(wb, "SystemGovt_Full_Backup.xlsx");
     }
 
-    // Realtime Listeners
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            document.getElementById('stV').value = settings.V.st; document.getElementById('rtV').value = settings.V.rt;
-            document.getElementById('stM').value = settings.M.st; document.getElementById('rtM').value = settings.M.rt;
-            document.getElementById('stU').value = settings.U.st; document.getElementById('rtU').value = settings.U.rt;
+            document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st;
+            document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st;
+            document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st;
             render();
+            autoBill();
         }
     });
 
@@ -354,7 +361,6 @@
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
 </script>
-
 </body>
-                                                                                                        </html>
-                                                                                                         
+        </html>
+        
