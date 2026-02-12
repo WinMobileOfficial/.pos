@@ -3,99 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda System | Full Professional Version</title>
+    <title>Vanda System | Pro Version</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
+        :root { --primary: #1a73e8; --success: #1e8e3e; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f1f3f4; padding: 10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; }
-        .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; padding: 4px; font-weight: bold; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
-        .multi-input-group { background: #f8f9fa; padding: 10px; border-radius: 8px; border-top: 3px solid #ccc; }
-        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-        button { cursor: pointer; padding: 12px; border: none; border-radius: 8px; font-weight: 600; flex: 1; transition: 0.2s; }
-        .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 15px; }
+        .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; font-weight: bold; padding: 4px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; padding: 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
         .table-container { overflow-x: auto; background: white; border-radius: 8px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #f1f3f4; font-size: 13px; }
-        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; }
-        .bg-vanda { background: var(--vanda); } .bg-mineral { background: var(--mineral); } .bg-umb { background: var(--umb); }
-        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
-        .btn-page { background: white; border: 1px solid #ddd; padding: 8px 15px; flex: none; }
-        @media print { .no-print { display: none !important; } }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin: 2px; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin: 15px 0; align-items: center; }
+        
+        /* Professional Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+            .item-box-container { display: flex !important; justify-content: space-around; margin-top: 20px; }
+            .item-box { border: 2px solid #000; padding: 15px; width: 25%; text-align: center; border-radius: 10px; }
+            .item-box h4 { margin: 0 0 10px 0; text-decoration: underline; }
+            table { border: 1px solid #000; }
+            th { background: #eee !important; color: black !important; border: 1px solid #000; }
+            td { border: 1px solid #000; }
+        }
+        .print-only { display: none; }
     </style>
 </head>
 <body>
 
-<div id="loader" style="text-align:center; padding:50px; font-weight:bold; color:var(--primary);">Synchronizing Cloud Data... ☁️</div>
+<div id="loader" style="text-align:center; padding:50px; font-weight:bold;">Connecting to Cloud... ☁️</div>
 
 <div id="mainUI" style="display:none;">
+    <div class="print-header print-only">
+        <h1>GOVT SYSTEM - SALES RECEIPT</h1>
+        <p>Date: <span id="printDate"></span></p>
+    </div>
+
     <div class="card no-print">
-        <h3 style="margin:0 0 10px 0; font-size:14px;">📊 Cloud Inventory & Rates</h3>
         <div class="inventory-grid">
-            <div class="inv-box" style="background:var(--vanda)">Vanda<br>
-                Stock: <input type="number" id="stVanda" onchange="updateSet()">
-                Rate: <input type="number" id="rtVanda" onchange="updateSet()">
-                <div id="remVanda" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
-            </div>
-            <div class="inv-box" style="background:var(--mineral)">Mineral<br>
-                Stock: <input type="number" id="stMineral" onchange="updateSet()">
-                Rate: <input type="number" id="rtMineral" onchange="updateSet()">
-                <div id="remMineral" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
-            </div>
-            <div class="inv-box" style="background:var(--umb)">UMB Block<br>
-                Stock: <input type="number" id="stUMB" onchange="updateSet()">
-                Rate: <input type="number" id="rtUMB" onchange="updateSet()">
-                <div id="remUMB" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
-            </div>
+            <div class="inv-box" style="background:var(--vanda)">Vanda Stock<br><input type="number" id="stV" onchange="upSet()">Rate<input type="number" id="rtV" onchange="upSet()"><div id="remV">Rem: 0</div></div>
+            <div class="inv-box" style="background:var(--mineral)">Mineral Stock<br><input type="number" id="stM" onchange="upSet()">Rate<input type="number" id="rtM" onchange="upSet()"><div id="remM">Rem: 0</div></div>
+            <div class="inv-box" style="background:var(--umb)">UMB Stock<br><input type="number" id="stU" onchange="upSet()">Rate<input type="number" id="rtU" onchange="upSet()"><div id="remU">Rem: 0</div></div>
         </div>
     </div>
 
     <div class="card no-print">
-        <h2 style="margin:0 0 10px 0; color:var(--primary);">🛒 Shop Management Form</h2>
         <div class="form-grid">
             <input type="hidden" id="editId">
-            <div><label>Date</label><input type="date" id="date"></div>
-            <div><label>Name</label><input type="text" id="name" placeholder="Client Name"></div>
-            <div><label>Phone</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
-            <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
-            <div><label>Address</label><input type="text" id="address" placeholder="Contact Details"></div>
-            <div class="multi-input-group" style="border-color: var(--vanda);"><label>Vanda Bags</label><input type="number" id="qtyV" onkeyup="autoBill()" placeholder="0"></div>
-            <div class="multi-input-group" style="border-color: var(--mineral);"><label>Mineral Bags</label><input type="number" id="qtyM" onkeyup="autoBill()" placeholder="0"></div>
-            <div class="multi-input-group" style="border-color: var(--umb);"><label>UMB Bags</label><input type="number" id="qtyU" onkeyup="autoBill()" placeholder="0"></div>
-            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#eee; font-weight:bold;"></div>
-            <div><label>Paid Amount</label><input type="number" id="payment" placeholder="Amount Paid"></div>
+            <input type="date" id="date">
+            <input type="text" id="name" placeholder="Customer Name">
+            <input type="text" id="phone" placeholder="Phone Number">
+            <input type="number" id="qtyV" onkeyup="autoBill()" placeholder="Vanda Qty">
+            <input type="number" id="qtyM" onkeyup="autoBill()" placeholder="Mineral Qty">
+            <input type="number" id="qtyU" onkeyup="autoBill()" placeholder="UMB Qty">
+            <input type="number" id="totalBill" readonly style="background:#eee; font-weight:bold" placeholder="Total Bill">
+            <input type="number" id="payment" placeholder="Paid Amount">
         </div>
-        <button class="btn-add" onclick="save()">💾 Save Combined Bill to Cloud</button>
-        
-        <div class="btn-row">
-            <input type="text" id="search" onkeyup="curPage=1; render()" placeholder="🔍 Search Name/Phone/CNIC..." style="flex:2;">
-            <select id="rowsPerPage" onchange="curPage=1; render()" style="width:100px;">
-                <option value="10">10 Rows</option>
-                <option value="50">50 Rows</option>
-                <option value="10000">All Records</option>
-            </select>
-            <button style="background:#e6f4ea; color:#1e8e3e; border:1px solid #1e8e3e;" onclick="exportExcel()">📊 Excel</button>
-            <button style="background:var(--primary); color:white;" onclick="window.print()">🖨️ Print</button>
+        <button class="btn-add" onclick="save()">💾 Save to Cloud</button>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+            <input type="text" id="search" onkeyup="curPage=1; render()" placeholder="🔍 Search Name/Phone..." style="flex:2">
+            <button onclick="exportExcel()" style="background:#e6f4ea; color:green; border:1px solid green; border-radius:8px; padding:0 15px;">Excel</button>
+            <button onclick="printReport()" style="background:var(--primary); color:white; border-radius:8px; padding:0 15px;">Print</button>
         </div>
     </div>
 
     <div class="table-container">
-        <table id="vandaTable">
+        <table id="mainTable">
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Customer Details</th>
-                    <th>Items Purchased</th>
+                    <th>Customer</th>
+                    <th>Items</th>
                     <th>Total Bags</th>
-                    <th>Grand Total</th>
+                    <th>Bill</th>
                     <th>Paid</th>
                     <th class="no-print">Action</th>
                 </tr>
@@ -105,15 +94,16 @@
         </table>
     </div>
 
+    <div class="item-box-container print-only" id="printBoxes"></div>
+
     <div class="pagination no-print">
-        <button class="btn-page" onclick="changePage(-1)">⬅️ Prev</button>
-        <span id="pageInfo">Page 1 of 1</span>
-        <button class="btn-page" onclick="changePage(1)">Next ➡️</button>
+        <button onclick="changePage(-1)">⬅️ Prev</button>
+        <span id="pageInfo">Page 1</span>
+        <button onclick="changePage(1)">Next ➡️</button>
     </div>
 </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY",
         authDomain: "system-govt.firebaseapp.com",
@@ -122,18 +112,16 @@
         messagingSenderId: "1033817025402",
         appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let records = [], settings = {}, curPage = 1;
+    let records = [], settings = {}, curPage = 1, rowsPerPage = 10;
 
-    // Cloud Settings (Fixes Minus/NaN issues)
-    async function updateSet() {
+    async function upSet() {
         const s = {
-            V: {st: parseInt(document.getElementById('stVanda').value)||0, rt: parseInt(document.getElementById('rtVanda').value)||0},
-            M: {st: parseInt(document.getElementById('stMineral').value)||0, rt: parseInt(document.getElementById('rtMineral').value)||0},
-            U: {st: parseInt(document.getElementById('stUMB').value)||0, rt: parseInt(document.getElementById('rtUMB').value)||0}
+            V: {st: parseInt(document.getElementById('stV').value)||0, rt: parseInt(document.getElementById('rtV').value)||0},
+            M: {st: parseInt(document.getElementById('stM').value)||0, rt: parseInt(document.getElementById('rtM').value)||0},
+            U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
     }
@@ -151,75 +139,55 @@
             date: document.getElementById('date').value,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
-            cnic: document.getElementById('cnic').value,
-            address: document.getElementById('address').value,
             qtyV: parseInt(document.getElementById('qtyV').value)||0,
             qtyM: parseInt(document.getElementById('qtyM').value)||0,
             qtyU: parseInt(document.getElementById('qtyU').value)||0,
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name) return alert("Customer Name is required!");
+        if(!data.name) return alert("Pehle Name likhen!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
-        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(f => document.getElementById(f).value = '');
+        ['editId','name','phone','qtyV','qtyM','qtyU','totalBill','payment'].forEach(f => document.getElementById(f).value = '');
     }
 
     function render() {
         const term = document.getElementById('search').value.toLowerCase();
-        const rows = parseInt(document.getElementById('rowsPerPage').value);
-        const filtered = records.filter(r => 
-            (r.name||"").toLowerCase().includes(term) || 
-            (r.phone||"").includes(term) || 
-            (r.cnic||"").includes(term)
-        );
+        const filtered = records.filter(r => (r.name||"").toLowerCase().includes(term) || (r.phone||"").includes(term));
         
-        // Stock Remainder Logic
         let used = {V:0, M:0, U:0};
         records.forEach(r => { used.V += (r.qtyV||0); used.M += (r.qtyM||0); used.U += (r.qtyU||0); });
-        
-        document.getElementById('remVanda').innerText = "Rem: " + ((settings.V?.st||0) - used.V);
-        document.getElementById('remMineral').innerText = "Rem: " + ((settings.M?.st||0) - used.M);
-        document.getElementById('remUMB').innerText = "Rem: " + ((settings.U?.st||0) - used.U);
 
-        // Pagination & Footer Calculation
-        const start = (curPage-1)*rows, paginated = filtered.slice(start, start+rows);
-        let h = '', tQty = 0, tBill = 0, tPay = 0;
+        document.getElementById('remV').innerText = "Rem: " + ((settings.V?.st||0) - used.V);
+        document.getElementById('remM').innerText = "Rem: " + ((settings.M?.st||0) - used.M);
+        document.getElementById('remU').innerText = "Rem: " + ((settings.U?.st||0) - used.U);
 
+        const start = (curPage-1)*rowsPerPage, paginated = filtered.slice(start, start+rowsPerPage);
+        let h = '', gQty = 0, gBill = 0, gPay = 0;
+
+        // Correct Grand Total Logic (Based on Filtered Data)
         filtered.forEach(r => {
-            tQty += ((r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0));
-            tBill += (r.total||0);
-            tPay += (r.pay||0);
+            gQty += ((r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0));
+            gBill += (r.total||0);
+            gPay += (r.pay||0);
         });
 
         paginated.forEach(r => {
-            h += `<tr>
-                <td>${r.date}</td>
-                <td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
-                <td>
-                    ${r.qtyV?`<span class="badge bg-vanda">V:${r.qtyV}</span>`:''}
-                    ${r.qtyM?`<span class="badge bg-mineral">M:${r.qtyM}</span>`:''}
-                    ${r.qtyU?`<span class="badge bg-umb">U:${r.qtyU}</span>`:''}
-                </td>
-                <td>${(r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0)}</td>
-                <td>${r.total}</td>
-                <td style="color:green; font-weight:bold;">${r.pay}</td>
-                <td class="no-print">
-                    <button onclick="edit('${r.id}')" style="background:#eee; font-size:10px; padding:5px;">Edit</button>
-                    <button onclick="del('${r.id}')" style="background:#fce8e6; color:red; font-size:10px; padding:5px;">X</button>
-                </td>
-            </tr>`;
+            h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
+            <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V:${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M:${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U:${r.qtyU}</span>`:''}</td>
+            <td>${(r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0)}</td><td>${r.total}</td><td style="color:green">${r.pay}</td>
+            <td class="no-print"><button onclick="edit('${r.id}')">Edit</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
         });
 
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('pageInfo').innerText = `Page ${curPage} of ${Math.ceil(filtered.length/rows) || 1}`;
-        document.getElementById('tableFoot').innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:right">TOTALS:</td>
-                <td>${tQty} Bags</td>
-                <td>Rs. ${tBill}</td>
-                <td style="color:green">Rs. ${tPay}</td>
-                <td></td>
-            </tr>`;
+        document.getElementById('pageInfo').innerText = `Page ${curPage} of ${Math.ceil(filtered.length/rowsPerPage) || 1}`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">GRAND TOTAL:</td><td>${gQty}</td><td>Rs. ${gBill}</td><td style="color:green">Rs. ${gPay}</td><td></td></tr>`;
+        
+        // Prepare Print Boxes
+        document.getElementById('printBoxes').innerHTML = `
+            <div class="item-box"><h4>VANDA</h4>Bags: ${used.V} / ${settings.V?.st||0}<br>Total: Rs. ${used.V * (settings.V?.rt||0)}</div>
+            <div class="item-box"><h4>MINERAL</h4>Bags: ${used.M} / ${settings.M?.st||0}<br>Total: Rs. ${used.M * (settings.M?.rt||0)}</div>
+            <div class="item-box"><h4>UMB BLOCK</h4>Bags: ${used.U} / ${settings.U?.st||0}<br>Total: Rs. ${used.U * (settings.U?.rt||0)}</div>
+        `;
     }
 
     function edit(id) {
@@ -228,8 +196,6 @@
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone||'';
-        document.getElementById('cnic').value = r.cnic||'';
-        document.getElementById('address').value = r.address||'';
         document.getElementById('qtyV').value = r.qtyV||0;
         document.getElementById('qtyM').value = r.qtyM||0;
         document.getElementById('qtyU').value = r.qtyU||0;
@@ -238,18 +204,15 @@
 
     async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
     function changePage(v) { curPage += v; if(curPage < 1) curPage = 1; render(); }
-    function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("vandaTable")), "Shop_Data.xlsx"); }
+    function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("mainTable")), "Sales_Report.xlsx"); }
+    function printReport() { document.getElementById('printDate').innerText = new Date().toLocaleDateString(); window.print(); }
 
-    // Live Listeners
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            document.getElementById('stVanda').value = settings.V?.st||0;
-            document.getElementById('rtVanda').value = settings.V?.rt||0;
-            document.getElementById('stMineral').value = settings.M?.st||0;
-            document.getElementById('rtMineral').value = settings.M?.rt||0;
-            document.getElementById('stUMB').value = settings.U?.st||0;
-            document.getElementById('rtUMB').value = settings.U?.rt||0;
+            document.getElementById('stV').value = settings.V?.st||0; document.getElementById('rtV').value = settings.V?.rt||0;
+            document.getElementById('stM').value = settings.M?.st||0; document.getElementById('rtM').value = settings.M?.rt||0;
+            document.getElementById('stU').value = settings.U?.st||0; document.getElementById('rtU').value = settings.U?.rt||0;
         }
         render();
     });
