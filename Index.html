@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda System | Pagination & Bill Search</title>
+    <title>Vanda System | Cloud Permanent Storage</title>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
@@ -25,12 +28,10 @@
         .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
         .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
 
-        /* Pagination Styles */
         .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
         .page-info { font-size: 14px; font-weight: bold; }
         .btn-page { background: #fff; border: 1px solid #ccc; padding: 5px 15px; flex: initial; width: auto; }
 
-        /* Table Design */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #5f6368; border-bottom: 2px solid #eee; }
@@ -42,146 +43,151 @@
         .bg-umb { background: var(--umb); }
 
         @media print {
-            @page { size: A4 portrait; margin: 10mm; }
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
             table { width: 100% !important; border: 1px solid #000; }
             th, td { border: 1px solid #ddd !important; padding: 8px !important; font-size: 10px !important; }
-            /* Har page ke baad break agar zarurat ho */
-            .page-break { page-break-after: always; }
         }
     </style>
 </head>
 <body>
 
-<div class="card no-print">
-    <h3 style="margin:0 0 10px 0; font-size:14px;">📊 Stock & Rate Settings</h3>
-    <div class="inventory-grid">
-        <div class="inv-box" style="background:var(--vanda)">Vanda<br>
-            Stock: <input type="number" id="stVanda" onchange="updateSettings()">
-            Rate: <input type="number" id="rtVanda" onchange="updateSettings()">
-            <div id="remVanda" style="font-weight:bold;">Rem: 0</div>
-        </div>
-        <div class="inv-box" style="background:var(--mineral)">Mineral<br>
-            Stock: <input type="number" id="stMineral" onchange="updateSettings()">
-            Rate: <input type="number" id="rtMineral" onchange="updateSettings()">
-            <div id="remMineral" style="font-weight:bold;">Rem: 0</div>
-        </div>
-        <div class="inv-box" style="background:var(--umb)">UMB Block<br>
-            Stock: <input type="number" id="stUMB" onchange="updateSettings()">
-            Rate: <input type="number" id="rtUMB" onchange="updateSettings()">
-            <div id="remUMB" style="font-weight:bold;">Rem: 0</div>
+<div id="loader" style="text-align:center; padding:50px; font-weight:bold; color:var(--primary);">Connecting to Cloud... ☁️</div>
+
+<div id="mainUI" style="display:none;">
+    <div class="card no-print">
+        <h3 style="margin:0 0 10px 0; font-size:14px;">📊 Cloud Stock & Rates</h3>
+        <div class="inventory-grid">
+            <div class="inv-box" style="background:var(--vanda)">Vanda<br>
+                Stock: <input type="number" id="stVanda" onchange="updateSettingsCloud()">
+                Rate: <input type="number" id="rtVanda" onchange="updateSettingsCloud()">
+                <div id="remVanda" style="font-weight:bold;">Rem: 0</div>
+            </div>
+            <div class="inv-box" style="background:var(--mineral)">Mineral<br>
+                Stock: <input type="number" id="stMineral" onchange="updateSettingsCloud()">
+                Rate: <input type="number" id="rtMineral" onchange="updateSettingsCloud()">
+                <div id="remMineral" style="font-weight:bold;">Rem: 0</div>
+            </div>
+            <div class="inv-box" style="background:var(--umb)">UMB Block<br>
+                Stock: <input type="number" id="stUMB" onchange="updateSettingsCloud()">
+                Rate: <input type="number" id="rtUMB" onchange="updateSettingsCloud()">
+                <div id="remUMB" style="font-weight:bold;">Rem: 0</div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="card no-print">
-    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management Form</h2>
-    <div class="form-grid">
-        <input type="hidden" id="editIndex" value="-1">
-        <div><label>Date</label><input type="date" id="date"></div>
-        <div><label>Item</label>
-            <select id="itemType" onchange="autoBill()">
-                <option value="Vanda">Vanda</option>
-                <option value="Mineral">Mineral</option>
-                <option value="UMB">UMB Block</option>
-            </select>
+    <div class="card no-print">
+        <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management Form</h2>
+        <div class="form-grid">
+            <input type="hidden" id="editId" value="">
+            <div><label>Date</label><input type="date" id="date"></div>
+            <div><label>Item</label>
+                <select id="itemType" onchange="autoBill()">
+                    <option value="Vanda">Vanda</option>
+                    <option value="Mineral">Mineral</option>
+                    <option value="UMB">UMB Block</option>
+                </select>
+            </div>
+            <div><label>Name</label><input type="text" id="name" placeholder="Client Name"></div>
+            <div><label>CNIC</label><input type="text" id="cnic" placeholder="Optional"></div>
+            <div><label>Phone/Address</label><input type="text" id="address" placeholder="Contact Details"></div>
+            <div><label>Bags Sold</label><input type="number" id="sold" onkeyup="autoBill()" placeholder="0"></div>
+            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;"></div>
+            <div><label>Paid</label><input type="number" id="payment" placeholder="Amount Received"></div>
         </div>
-        <div><label>Name</label><input type="text" id="name" placeholder="Client Name"></div>
-        <div><label>Phone/Address</label><input type="text" id="address" placeholder="Contact Details"></div>
-        <div><label>Bags Sold</label><input type="number" id="sold" onkeyup="autoBill()" placeholder="0"></div>
-        <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;"></div>
-        <div><label>Paid</label><input type="number" id="payment" placeholder="Amount Received"></div>
-    </div>
-    <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save & Update Stock</button>
-    
-    <div class="btn-row">
-        <div style="flex:2; display:flex; gap:5px;">
-            <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name (For Bill)..." style="width:100%;">
-            <select id="rowsPerPage" onchange="resetPage(); renderTable();" style="width:100px;">
-                <option value="10">10 Rows</option>
-                <option value="25">25 Rows</option>
-                <option value="50">50 Rows</option>
-                <option value="100000">All</option>
-            </select>
+        <button class="btn-add" id="mainBtn" onclick="saveToCloud()">💾 Save to Cloud & Sync</button>
+        
+        <div class="btn-row">
+            <div style="flex:2; display:flex; gap:5px;">
+                <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name or CNIC..." style="width:100%;">
+                <select id="rowsPerPage" onchange="resetPage(); renderTable();" style="width:100px;">
+                    <option value="10">10 Rows</option>
+                    <option value="25">25 Rows</option>
+                    <option value="100000">All</option>
+                </select>
+            </div>
+            <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Print</button>
         </div>
-        <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
-        <button class="btn-print" onclick="window.print()">🖨️ Print Bill/Report</button>
     </div>
-</div>
 
-<div class="table-container">
-    <table id="vandaTable">
-        <thead>
-            <tr>
-                <th style="width: 12%;">Date</th>
-                <th style="width: 13%;">Item</th>
-                <th style="width: 30%;">Customer Details</th>
-                <th style="width: 8%;">Bags</th>
-                <th style="width: 10%;">Rate</th>
-                <th style="width: 12%;">Total</th>
-                <th style="width: 12%;">Paid</th>
-                <th class="no-print" style="width: 80px;">Action</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-        <tfoot id="tableFoot"></tfoot>
-    </table>
-</div>
+    <div class="table-container">
+        <table id="vandaTable">
+            <thead>
+                <tr>
+                    <th style="width: 12%;">Date</th>
+                    <th style="width: 13%;">Item</th>
+                    <th style="width: 30%;">Customer (CNIC)</th>
+                    <th style="width: 8%;">Bags</th>
+                    <th style="width: 10%;">Rate</th>
+                    <th style="width: 12%;">Total Bill</th>
+                    <th style="width: 12%;">Paid</th>
+                    <th class="no-print" style="width: 80px;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+            <tfoot id="tableFoot"></tfoot>
+        </table>
+    </div>
 
-<div class="pagination no-print">
-    <button class="btn-page" onclick="prevPage()">⬅️ Prev</button>
-    <span class="page-info" id="pageNumber">Page 1</span>
-    <button class="btn-page" onclick="nextPage()">Next ➡️</button>
+    <div class="pagination no-print">
+        <button class="btn-page" onclick="prevPage()">⬅️ Prev</button>
+        <span class="page-info" id="pageNumber">Page 1</span>
+        <button class="btn-page" onclick="nextPage()">Next ➡️</button>
+    </div>
 </div>
 
 <script>
-    const REC_KEY = 'shop_v11_pagi';
-    const SET_KEY = 'settings_v11_pagi';
-    
-    let records = JSON.parse(localStorage.getItem(REC_KEY)) || [];
-    let settings = JSON.parse(localStorage.getItem(SET_KEY)) || {
-        Vanda: {st:0, rt:0}, Mineral: {st:0, rt:0}, UMB: {st:0, rt:0}
+    // 🔥 Firebase Config (Integrated from your screenshot)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY",
+        authDomain: "system-govt.firebaseapp.com",
+        projectId: "system-govt",
+        storageBucket: "system-govt.firebasestorage.app",
+        messagingSenderId: "1033817025402",
+        appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3"
     };
 
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let records = [];
+    let settings = { Vanda:{st:0, rt:0}, Mineral:{st:0, rt:0}, UMB:{st:0, rt:0} };
     let currentPage = 1;
 
-    document.getElementById('date').valueAsDate = new Date();
-    loadSettings();
+    // Load Data from Cloud
+    function init() {
+        // Listen to Settings
+        db.collection("settings").doc("main").onSnapshot(doc => {
+            if(doc.exists()) {
+                settings = doc.data();
+                document.getElementById('stVanda').value = settings.Vanda.st;
+                document.getElementById('rtVanda').value = settings.Vanda.rt;
+                document.getElementById('stMineral').value = settings.Mineral.st;
+                document.getElementById('rtMineral').value = settings.Mineral.rt;
+                document.getElementById('stUMB').value = settings.UMB.st;
+                document.getElementById('rtUMB').value = settings.UMB.rt;
+            }
+            renderTable();
+        });
 
-    function loadSettings() {
-        document.getElementById('stVanda').value = settings.Vanda.st;
-        document.getElementById('rtVanda').value = settings.Vanda.rt;
-        document.getElementById('stMineral').value = settings.Mineral.st;
-        document.getElementById('rtMineral').value = settings.Mineral.rt;
-        document.getElementById('stUMB').value = settings.UMB.st;
-        document.getElementById('rtUMB').value = settings.UMB.rt;
-        renderTable();
+        // Listen to Records
+        db.collection("records").orderBy("date", "desc").onSnapshot(snap => {
+            records = [];
+            snap.forEach(doc => records.push({id: doc.id, ...doc.data()}));
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('mainUI').style.display = 'block';
+            renderTable();
+        });
     }
 
-    function updateSettings() {
-        settings.Vanda.st = parseInt(document.getElementById('stVanda').value) || 0;
-        settings.Vanda.rt = parseInt(document.getElementById('rtVanda').value) || 0;
-        settings.Mineral.st = parseInt(document.getElementById('stMineral').value) || 0;
-        settings.Mineral.rt = parseInt(document.getElementById('rtMineral').value) || 0;
-        settings.UMB.st = parseInt(document.getElementById('stUMB').value) || 0;
-        settings.UMB.rt = parseInt(document.getElementById('rtUMB').value) || 0;
-        localStorage.setItem(SET_KEY, JSON.stringify(settings));
-        renderTable();
-    }
-
-    function autoBill() {
-        let item = document.getElementById('itemType').value;
-        let qty = parseInt(document.getElementById('sold').value) || 0;
-        document.getElementById('totalBill').value = qty * settings[item].rt;
-    }
-
-    function saveData() {
-        const index = document.getElementById('editIndex').value;
+    async function saveToCloud() {
+        const id = document.getElementById('editId').value;
         const data = {
             date: document.getElementById('date').value,
             item: document.getElementById('itemType').value,
             name: document.getElementById('name').value,
+            cnic: document.getElementById('cnic').value,
             address: document.getElementById('address').value,
             sold: parseInt(document.getElementById('sold').value) || 0,
             rate: settings[document.getElementById('itemType').value].rt,
@@ -189,21 +195,34 @@
             pay: parseInt(document.getElementById('payment').value) || 0
         };
 
-        if(!data.name) return alert("Pehle Name likhen!");
+        if(!data.name) return alert("Please enter Name!");
 
-        if(index == -1) records.unshift(data); // Naya record sab se upar
-        else records[index] = data;
-
-        localStorage.setItem(REC_KEY, JSON.stringify(records));
+        if(id) {
+            await db.collection("records").doc(id).update(data);
+        } else {
+            await db.collection("records").add(data);
+        }
         clearInputs();
-        renderTable();
+    }
+
+    async function updateSettingsCloud() {
+        settings = {
+            Vanda: { st: parseInt(document.getElementById('stVanda').value)||0, rt: parseInt(document.getElementById('rtVanda').value)||0 },
+            Mineral: { st: parseInt(document.getElementById('stMineral').value)||0, rt: parseInt(document.getElementById('rtMineral').value)||0 },
+            UMB: { st: parseInt(document.getElementById('stUMB').value)||0, rt: parseInt(document.getElementById('rtUMB').value)||0 }
+        };
+        await db.collection("settings").doc("main").set(settings);
     }
 
     function renderTable() {
         const search = document.getElementById('search').value.toLowerCase();
         const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
         
-        let filtered = records.filter(r => r.name.toLowerCase().includes(search) || r.item.toLowerCase().includes(search));
+        let filtered = records.filter(r => 
+            r.name.toLowerCase().includes(search) || 
+            (r.cnic && r.cnic.includes(search)) || 
+            r.item.toLowerCase().includes(search)
+        );
         
         // Stock Calculation
         let used = { Vanda: 0, Mineral: 0, UMB: 0 };
@@ -212,102 +231,86 @@
         document.getElementById('remMineral').innerText = "Rem: " + (settings.Mineral.st - used.Mineral);
         document.getElementById('remUMB').innerText = "Rem: " + (settings.UMB.st - used.UMB);
 
-        // Pagination Logic
         let totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
         
         let start = (currentPage - 1) * rowsPerPage;
-        let end = start + rowsPerPage;
-        let paginatedItems = filtered.slice(start, end);
+        let paginatedItems = filtered.slice(start, start + rowsPerPage);
 
         let html = '';
         let sums = {qty:0, bill:0, pay:0};
+        filtered.forEach(r => { sums.qty += r.sold; sums.bill += r.totalBill; sums.pay += r.pay; });
 
-        // Summary calculations (Based on search/filter)
-        filtered.forEach(r => {
-            sums.qty += r.sold; sums.bill += r.totalBill; sums.pay += r.pay;
-        });
-
-        paginatedItems.forEach((r, i) => {
-            let actualIndex = records.indexOf(r);
+        paginatedItems.forEach((r) => {
             let bClass = r.item === 'Vanda' ? 'bg-vanda' : (r.item === 'Mineral' ? 'bg-mineral' : 'bg-umb');
             html += `<tr>
                 <td>${r.date}</td>
                 <td><span class="badge ${bClass}">${r.item}</span></td>
-                <td><strong>${r.name}</strong><br><small>${r.address}</small></td>
+                <td><strong>${r.name}</strong><br><small>${r.cnic ? 'CNIC: '+r.cnic : ''} | ${r.address}</small></td>
                 <td>${r.sold}</td>
                 <td>${r.rate}</td>
                 <td>${r.totalBill}</td>
                 <td style="color:green; font-weight:bold;">${r.pay}</td>
                 <td class="no-print">
-                    <button class="btn-edit" onclick="editEntry(${actualIndex})">Edit</button>
-                    <button class="btn-del" onclick="deleteEntry(${actualIndex})">X</button>
+                    <button class="btn-edit" onclick="editEntry('${r.id}')">Edit</button>
+                    <button class="btn-del" onclick="deleteEntry('${r.id}')">X</button>
                 </td>
             </tr>`;
         });
 
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('pageNumber').innerText = `Page ${currentPage} of ${totalPages}`;
-        
         document.getElementById('tableFoot').innerHTML = `
-            <tr class="summary-row">
-                <td colspan="3" style="text-align:right">PAGE TOTAL:</td>
-                <td>${sums.qty}</td>
+            <tr>
+                <td colspan="3" style="text-align:right"><strong>FILTER TOTAL:</strong></td>
+                <td><strong>${sums.qty}</strong></td>
                 <td>-</td>
-                <td>${sums.bill}</td>
-                <td style="color:green">${sums.pay}</td>
+                <td><strong>${sums.bill}</strong></td>
+                <td style="color:green"><strong>${sums.pay}</strong></td>
                 <td class="no-print"></td>
             </tr>`;
     }
- 
-    // Pagination Functions
-    function nextPage() {
-        const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
-        if (currentPage * rowsPerPage < records.length) {
-            currentPage++;
-            renderTable();
-        }
-    }
-    function prevPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    }
+
+    function nextPage() { currentPage++; renderTable(); }
+    function prevPage() { if(currentPage > 1) { currentPage--; renderTable(); } }
     function resetPage() { currentPage = 1; }
 
-    function editEntry(i) {
-        let r = records[i];
+    function editEntry(id) {
+        let r = records.find(rec => rec.id === id);
         document.getElementById('date').value = r.date;
         document.getElementById('itemType').value = r.item;
         document.getElementById('name').value = r.name;
+        document.getElementById('cnic').value = r.cnic || '';
         document.getElementById('address').value = r.address;
         document.getElementById('sold').value = r.sold;
         document.getElementById('totalBill').value = r.totalBill;
         document.getElementById('payment').value = r.pay;
-        document.getElementById('editIndex').value = i;
+        document.getElementById('editId').value = id;
         window.scrollTo(0,0);
     }
 
-    function deleteEntry(i) {
-        if(confirm("Delete record?")) {
-            records.splice(i, 1);
-            localStorage.setItem(REC_KEY, JSON.stringify(records));
-            renderTable();
-        }
+    async function deleteEntry(id) {
+        if(confirm("Cloud se delete kar den?")) await db.collection("records").doc(id).delete();
+    }
+
+    function autoBill() {
+        let item = document.getElementById('itemType').value;
+        let qty = parseInt(document.getElementById('sold').value) || 0;
+        document.getElementById('totalBill').value = qty * settings[item].rt;
     }
 
     function clearInputs() {
-        ['name','address','sold','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('editIndex').value = "-1";
+        ['name','cnic','address','sold','totalBill','payment','editId'].forEach(id => document.getElementById(id).value = '');
     }
 
     function exportExcel() {
         var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Vanda_Backup.xlsx");
+        XLSX.writeFile(wb, "Vanda_Cloud_Backup.xlsx");
     }
 
-    renderTable();
+    document.getElementById('date').valueAsDate = new Date();
+    init();
 </script>
 </body>
-</html>
+    </html>
+    
