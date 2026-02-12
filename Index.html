@@ -6,13 +6,13 @@
     <title>Vanda Management System | Final Fix</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; }
+        :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
         
         /* Dashboard Card */
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-        input { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        input, select { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
         
         .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
         button { cursor: pointer; padding: 10px; border: none; border-radius: 6px; font-weight: 600; flex: 1; transition: 0.2s; }
@@ -24,14 +24,18 @@
 
         /* Table Design Fix */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 700px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 800px; }
         th { background: #f8f9fa; padding: 10px; text-align: left; font-size: 11px; color: #5f6368; border-bottom: 2px solid #eee; }
         td { padding: 10px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; overflow-wrap: break-word; word-wrap: break-word; }
         
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; }
+        .bg-vanda { background: var(--vanda); }
+        .bg-mineral { background: var(--mineral); }
+        .bg-umb { background: var(--umb); }
+
         .client-info-block { font-size: 12px; line-height: 1.4; color: #444; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px; }
         .summary-row { background: #f8f9fa; font-weight: bold; font-size: 14px; }
 
-        /* 🖨️ PRINT OPTIMIZATION (FOR A4 PAPER) */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; margin: 0; }
@@ -47,10 +51,17 @@
 <body>
 
 <div class="card no-print">
-    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Vanda Management System</h2>
+    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management System</h2>
     <div class="form-grid">
         <input type="hidden" id="editIndex" value="-1">
         <div><label style="font-size:12px;">Date</label><input type="date" id="date"></div>
+        <div><label style="font-size:12px;">Item Name (آئٹم کا نام)</label>
+            <select id="itemType">
+                <option value="ونڈا (Vanda)">ونڈا (Vanda)</option>
+                <option value="منرل (Mineral)">منرل (Mineral)</option>
+                <option value="یوریا ملائسز بلاک (UMB)">یوریا ملائسز بلاک (UMB)</option>
+            </select>
+        </div>
         <div><label style="font-size:12px;">Name</label><input type="text" id="name" placeholder="Client Name"></div>
         <div><label style="font-size:12px;">Phone</label><input type="text" id="phone" placeholder="Phone No."></div>
         <div><label style="font-size:12px;">CNIC</label><input type="text" id="cnic" placeholder="CNIC No."></div>
@@ -62,7 +73,7 @@
     <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save Record</button>
     
     <div class="btn-row">
-        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search by Name..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search Name or Item..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
         <button class="btn-excel" onclick="exportExcel()">📊 Download Excel</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
     </div>
@@ -73,6 +84,7 @@
         <thead>
             <tr>
                 <th style="width: 80px;">Date</th>
+                <th style="width: 100px;">Item</th>
                 <th style="width: 250px;">Customer & Contact Details</th>
                 <th style="width: 60px;">Total</th>
                 <th style="width: 60px;">Deliv.</th>
@@ -87,8 +99,7 @@
 </div>
 
 <script>
-    // Storage Key
-    const DB_NAME = 'vanda_final_database_v4';
+    const DB_NAME = 'shop_final_db_v5';
     let records = JSON.parse(localStorage.getItem(DB_NAME)) || [];
     document.getElementById('date').valueAsDate = new Date();
 
@@ -96,6 +107,7 @@
         const index = document.getElementById('editIndex').value;
         const data = {
             date: document.getElementById('date').value,
+            item: document.getElementById('itemType').value,
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
             cnic: document.getElementById('cnic').value,
@@ -105,14 +117,10 @@
             pay: parseInt(document.getElementById('payment').value) || 0
         };
 
-        if(!data.name) {
-            alert("Meharbani karke Customer ka naam likhen!");
-            return;
-        }
+        if(!data.name) return alert("Customer ka naam likhen!");
 
-        if(index == -1) {
-            records.push(data);
-        } else {
+        if(index == -1) records.push(data);
+        else {
             records[index] = data;
             document.getElementById('editIndex').value = -1;
             document.getElementById('mainBtn').innerText = "💾 Save Record";
@@ -130,12 +138,15 @@
         let sums = {t:0, d:0, r:0, p:0};
 
         records.forEach((r, i) => {
-            if(r.name.toLowerCase().includes(search)) {
+            if(r.name.toLowerCase().includes(search) || r.item.toLowerCase().includes(search)) {
                 let rem = r.total - r.deliv;
                 sums.t += r.total; sums.d += r.deliv; sums.r += rem; sums.p += r.pay;
 
+                let bClass = r.item.includes('ونڈا') ? 'bg-vanda' : (r.item.includes('منرل') ? 'bg-mineral' : 'bg-umb');
+
                 html += `<tr>
                     <td>${r.date}</td>
+                    <td><span class="badge ${bClass}">${r.item}</span></td>
                     <td>
                         <strong>${r.name}</strong>
                         <div class="client-info-block">
@@ -158,7 +169,7 @@
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('tableFoot').innerHTML = `
             <tr class="summary-row">
-                <td colspan="2" style="text-align:right">GRAND TOTAL:</td>
+                <td colspan="3" style="text-align:right">GRAND TOTAL:</td>
                 <td>${sums.t}</td>
                 <td>${sums.d}</td>
                 <td style="color:red">${sums.r}</td>
@@ -170,6 +181,7 @@
     function editEntry(i) {
         const r = records[i];
         document.getElementById('date').value = r.date;
+        document.getElementById('itemType').value = r.item;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone;
         document.getElementById('cnic').value = r.cnic;
@@ -184,7 +196,7 @@
     }
 
     function deleteEntry(i) {
-        if(confirm("Kya aap waqai ye entry delete karna chahte hain?")) {
+        if(confirm("Delete entry?")) {
             records.splice(i, 1);
             localStorage.setItem(DB_NAME, JSON.stringify(records));
             renderTable();
@@ -198,7 +210,7 @@
 
     function exportExcel() {
         var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Vanda_Full_Report.xlsx");
+        XLSX.writeFile(wb, "Shop_Full_Report.xlsx");
     }
 
     renderTable();
