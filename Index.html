@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda Management System | A4 Print Fixed</title>
+    <title>Vanda System | Pagination & Bill Search</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #1a73e8; --success: #1e8e3e; --danger: #d93025; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; }
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
         
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        
-        /* Inventory Section */
         .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 12px; }
         .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; padding: 4px; font-weight: bold; }
@@ -27,47 +25,30 @@
         .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
         .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
 
+        /* Pagination Styles */
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
+        .page-info { font-size: 14px; font-weight: bold; }
+        .btn-page { background: #fff; border: 1px solid #ccc; padding: 5px 15px; flex: initial; width: auto; }
+
         /* Table Design */
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #5f6368; border-bottom: 2px solid #eee; border-right: 1px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #f1f3f4; border-right: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #5f6368; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; }
         
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; }
         .bg-vanda { background: var(--vanda); }
         .bg-mineral { background: var(--mineral); }
         .bg-umb { background: var(--umb); }
 
-        .client-info-block { font-size: 12px; line-height: 1.4; color: #444; margin-top: 5px; border-top: 1px dashed #ddd; padding-top: 5px; }
-        .summary-row { background: #f8f9fa; font-weight: bold; font-size: 14px; }
-
-        /* 🔥 A4 PRINTING ENGINE FIX 🔥 */
         @media print {
-            @page { 
-                size: A4 portrait; 
-                margin: 10mm; /* Sahi A4 margins */
-            }
+            @page { size: A4 portrait; margin: 10mm; }
             .no-print { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
-            .card { box-shadow: none; border: none; padding: 0; margin: 0; }
-            .table-container { box-shadow: none; overflow: visible; width: 100%; }
-            
-            table { 
-                width: 100% !important; 
-                table-layout: fixed !important; /* Forces columns to stay within A4 */
-                border: 1px solid #000 !important; 
-            }
-            
-            th, td { 
-                border: 1px solid #ccc !important; 
-                padding: 8px 4px !important; 
-                font-size: 11px !important; 
-                word-wrap: break-word !important; /* Lambe text ko next line par bhejega */
-            }
-            
-            th { background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; }
-            .badge { border: 1px solid #666; color: black !important; background: transparent !important; }
-            .summary-row td { background-color: #eee !important; -webkit-print-color-adjust: exact; font-weight: bold; }
+            body { background: white; padding: 0; }
+            table { width: 100% !important; border: 1px solid #000; }
+            th, td { border: 1px solid #ddd !important; padding: 8px !important; font-size: 10px !important; }
+            /* Har page ke baad break agar zarurat ho */
+            .page-break { page-break-after: always; }
         }
     </style>
 </head>
@@ -76,52 +57,56 @@
 <div class="card no-print">
     <h3 style="margin:0 0 10px 0; font-size:14px;">📊 Stock & Rate Settings</h3>
     <div class="inventory-grid">
-        <div class="inv-box" style="background:var(--vanda)">
-            ونڈا (Vanda)<br>
-            Stock: <input type="number" id="stVanda" onchange="updateSettings()" placeholder="Bags">
-            Rate: <input type="number" id="rtVanda" onchange="updateSettings()" placeholder="Price">
-            <div id="remVanda" style="margin-top:5px; font-weight:bold;">Rem: 0</div>
+        <div class="inv-box" style="background:var(--vanda)">Vanda<br>
+            Stock: <input type="number" id="stVanda" onchange="updateSettings()">
+            Rate: <input type="number" id="rtVanda" onchange="updateSettings()">
+            <div id="remVanda" style="font-weight:bold;">Rem: 0</div>
         </div>
-        <div class="inv-box" style="background:var(--mineral)">
-            منرل (Mineral)<br>
-            Stock: <input type="number" id="stMineral" onchange="updateSettings()" placeholder="Bags">
-            Rate: <input type="number" id="rtMineral" onchange="updateSettings()" placeholder="Price">
-            <div id="remMineral" style="margin-top:5px; font-weight:bold;">Rem: 0</div>
+        <div class="inv-box" style="background:var(--mineral)">Mineral<br>
+            Stock: <input type="number" id="stMineral" onchange="updateSettings()">
+            Rate: <input type="number" id="rtMineral" onchange="updateSettings()">
+            <div id="remMineral" style="font-weight:bold;">Rem: 0</div>
         </div>
-        <div class="inv-box" style="background:var(--umb)">
-            UMB Block<br>
-            Stock: <input type="number" id="stUMB" onchange="updateSettings()" placeholder="Bags">
-            Rate: <input type="number" id="rtUMB" onchange="updateSettings()" placeholder="Price">
-            <div id="remUMB" style="margin-top:5px; font-weight:bold;">Rem: 0</div>
+        <div class="inv-box" style="background:var(--umb)">UMB Block<br>
+            Stock: <input type="number" id="stUMB" onchange="updateSettings()">
+            Rate: <input type="number" id="rtUMB" onchange="updateSettings()">
+            <div id="remUMB" style="font-weight:bold;">Rem: 0</div>
         </div>
     </div>
 </div>
 
 <div class="card no-print">
-    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management System</h2>
+    <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management Form</h2>
     <div class="form-grid">
         <input type="hidden" id="editIndex" value="-1">
-        <div><label style="font-size:12px;">Date</label><input type="date" id="date"></div>
-        <div><label style="font-size:12px;">Item Name</label>
+        <div><label>Date</label><input type="date" id="date"></div>
+        <div><label>Item</label>
             <select id="itemType" onchange="autoBill()">
-                <option value="Vanda">ونڈا (Vanda)</option>
-                <option value="Mineral">منرل (Mineral)</option>
-                <option value="UMB">یوریا ملائسز بلاک (UMB)</option>
+                <option value="Vanda">Vanda</option>
+                <option value="Mineral">Mineral</option>
+                <option value="UMB">UMB Block</option>
             </select>
         </div>
-        <div><label style="font-size:12px;">Name</label><input type="text" id="name" placeholder="Client Name"></div>
-        <div><label style="font-size:12px;">Phone</label><input type="text" id="phone" placeholder="Phone No."></div>
-        <div><label style="font-size:12px;">Address</label><input type="text" id="address" placeholder="Village/City"></div>
-        <div><label style="font-size:12px;">Bags Sold</label><input type="number" id="sold" onkeyup="autoBill()" placeholder="0"></div>
-        <div><label style="font-size:12px;">Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;"></div>
-        <div><label style="font-size:12px;">Payment Received</label><input type="number" id="payment" placeholder="Rs."></div>
+        <div><label>Name</label><input type="text" id="name" placeholder="Client Name"></div>
+        <div><label>Phone/Address</label><input type="text" id="address" placeholder="Contact Details"></div>
+        <div><label>Bags Sold</label><input type="number" id="sold" onkeyup="autoBill()" placeholder="0"></div>
+        <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0;"></div>
+        <div><label>Paid</label><input type="number" id="payment" placeholder="Amount Received"></div>
     </div>
-    <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save Record & Update Stock</button>
+    <button class="btn-add" id="mainBtn" onclick="saveData()">💾 Save & Update Stock</button>
     
     <div class="btn-row">
-        <input type="text" id="search" onkeyup="renderTable()" placeholder="🔍 Search..." style="flex: 2; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <div style="flex:2; display:flex; gap:5px;">
+            <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name (For Bill)..." style="width:100%;">
+            <select id="rowsPerPage" onchange="resetPage(); renderTable();" style="width:100px;">
+                <option value="10">10 Rows</option>
+                <option value="25">25 Rows</option>
+                <option value="50">50 Rows</option>
+                <option value="100000">All</option>
+            </select>
+        </div>
         <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
-        <button class="btn-print" onclick="window.print()">🖨️ Print A4 Report</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print Bill/Report</button>
     </div>
 </div>
 
@@ -144,14 +129,22 @@
     </table>
 </div>
 
+<div class="pagination no-print">
+    <button class="btn-page" onclick="prevPage()">⬅️ Prev</button>
+    <span class="page-info" id="pageNumber">Page 1</span>
+    <button class="btn-page" onclick="nextPage()">Next ➡️</button>
+</div>
+
 <script>
-    const REC_KEY = 'shop_v8_a4_fix';
-    const SET_KEY = 'settings_v8_a4_fix';
+    const REC_KEY = 'shop_v11_pagi';
+    const SET_KEY = 'settings_v11_pagi';
     
     let records = JSON.parse(localStorage.getItem(REC_KEY)) || [];
     let settings = JSON.parse(localStorage.getItem(SET_KEY)) || {
         Vanda: {st:0, rt:0}, Mineral: {st:0, rt:0}, UMB: {st:0, rt:0}
     };
+
+    let currentPage = 1;
 
     document.getElementById('date').valueAsDate = new Date();
     loadSettings();
@@ -189,7 +182,6 @@
             date: document.getElementById('date').value,
             item: document.getElementById('itemType').value,
             name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
             address: document.getElementById('address').value,
             sold: parseInt(document.getElementById('sold').value) || 0,
             rate: settings[document.getElementById('itemType').value].rt,
@@ -197,9 +189,9 @@
             pay: parseInt(document.getElementById('payment').value) || 0
         };
 
-        if(!data.name || data.sold <= 0) return alert("Please fill data!");
+        if(!data.name) return alert("Pehle Name likhen!");
 
-        if(index == -1) records.push(data);
+        if(index == -1) records.unshift(data); // Naya record sab se upar
         else records[index] = data;
 
         localStorage.setItem(REC_KEY, JSON.stringify(records));
@@ -209,41 +201,57 @@
 
     function renderTable() {
         const search = document.getElementById('search').value.toLowerCase();
-        let html = '';
-        let sums = {qty:0, bill:0, pay:0};
+        const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+        
+        let filtered = records.filter(r => r.name.toLowerCase().includes(search) || r.item.toLowerCase().includes(search));
+        
+        // Stock Calculation
         let used = { Vanda: 0, Mineral: 0, UMB: 0 };
-
         records.forEach(r => { used[r.item] += r.sold; });
-
         document.getElementById('remVanda').innerText = "Rem: " + (settings.Vanda.st - used.Vanda);
         document.getElementById('remMineral').innerText = "Rem: " + (settings.Mineral.st - used.Mineral);
         document.getElementById('remUMB').innerText = "Rem: " + (settings.UMB.st - used.UMB);
 
-        records.forEach((r, i) => {
-            if(r.name.toLowerCase().includes(search) || r.item.toLowerCase().includes(search)) {
-                sums.qty += r.sold; sums.bill += r.totalBill; sums.pay += r.pay;
-                let bClass = r.item === 'Vanda' ? 'bg-vanda' : (r.item === 'Mineral' ? 'bg-mineral' : 'bg-umb');
+        // Pagination Logic
+        let totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        
+        let start = (currentPage - 1) * rowsPerPage;
+        let end = start + rowsPerPage;
+        let paginatedItems = filtered.slice(start, end);
 
-                html += `<tr>
-                    <td>${r.date}</td>
-                    <td><span class="badge ${bClass}">${r.item}</span></td>
-                    <td><strong>${r.name}</strong><br><small>${r.phone} | ${r.address}</small></td>
-                    <td>${r.sold}</td>
-                    <td>${r.rate}</td>
-                    <td>${r.totalBill}</td>
-                    <td style="color:green; font-weight:bold;">${r.pay}</td>
-                    <td class="no-print">
-                        <button class="btn-edit" onclick="editEntry(${i})">Edit</button>
-                        <button class="btn-del" onclick="deleteEntry(${i})">X</button>
-                    </td>
-                </tr>`;
-            }
+        let html = '';
+        let sums = {qty:0, bill:0, pay:0};
+
+        // Summary calculations (Based on search/filter)
+        filtered.forEach(r => {
+            sums.qty += r.sold; sums.bill += r.totalBill; sums.pay += r.pay;
+        });
+
+        paginatedItems.forEach((r, i) => {
+            let actualIndex = records.indexOf(r);
+            let bClass = r.item === 'Vanda' ? 'bg-vanda' : (r.item === 'Mineral' ? 'bg-mineral' : 'bg-umb');
+            html += `<tr>
+                <td>${r.date}</td>
+                <td><span class="badge ${bClass}">${r.item}</span></td>
+                <td><strong>${r.name}</strong><br><small>${r.address}</small></td>
+                <td>${r.sold}</td>
+                <td>${r.rate}</td>
+                <td>${r.totalBill}</td>
+                <td style="color:green; font-weight:bold;">${r.pay}</td>
+                <td class="no-print">
+                    <button class="btn-edit" onclick="editEntry(${actualIndex})">Edit</button>
+                    <button class="btn-del" onclick="deleteEntry(${actualIndex})">X</button>
+                </td>
+            </tr>`;
         });
 
         document.getElementById('tableBody').innerHTML = html;
+        document.getElementById('pageNumber').innerText = `Page ${currentPage} of ${totalPages}`;
+        
         document.getElementById('tableFoot').innerHTML = `
             <tr class="summary-row">
-                <td colspan="3" style="text-align:right">GRAND TOTAL:</td>
+                <td colspan="3" style="text-align:right">PAGE TOTAL:</td>
                 <td>${sums.qty}</td>
                 <td>-</td>
                 <td>${sums.bill}</td>
@@ -252,12 +260,27 @@
             </tr>`;
     }
 
+    // Pagination Functions
+    function nextPage() {
+        const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+        if (currentPage * rowsPerPage < records.length) {
+            currentPage++;
+            renderTable();
+        }
+    }
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    }
+    function resetPage() { currentPage = 1; }
+
     function editEntry(i) {
         let r = records[i];
         document.getElementById('date').value = r.date;
         document.getElementById('itemType').value = r.item;
         document.getElementById('name').value = r.name;
-        document.getElementById('phone').value = r.phone;
         document.getElementById('address').value = r.address;
         document.getElementById('sold').value = r.sold;
         document.getElementById('totalBill').value = r.totalBill;
@@ -275,13 +298,13 @@
     }
 
     function clearInputs() {
-        ['name','phone','address','sold','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
+        ['name','address','sold','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('editIndex').value = "-1";
     }
 
     function exportExcel() {
         var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Shop_Inventory_Report.xlsx");
+        XLSX.writeFile(wb, "Vanda_Backup.xlsx");
     }
 
     renderTable();
