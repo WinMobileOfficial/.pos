@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda System | Fixed Multi-Item</title>
+    <title>Vanda System | Full Features Cloud</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -23,7 +23,7 @@
         .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 16px; }
         .btn-excel { background: #e6f4ea; color: #1e8e3e; border: 1px solid #1e8e3e; }
         .btn-print { background: var(--primary); color: white; }
-        .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; }
+        .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
         .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
         .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -31,9 +31,7 @@
         th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #eee; }
         td { padding: 12px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; }
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-right: 2px; }
-        .bg-vanda { background: var(--vanda); }
-        .bg-mineral { background: var(--mineral); }
-        .bg-umb { background: var(--umb); }
+        .bg-vanda { background: var(--vanda); } .bg-mineral { background: var(--mineral); } .bg-umb { background: var(--umb); }
         @media print { .no-print { display: none !important; } body { background: white; padding: 0; } table { width: 100% !important; border: 1px solid #000; } }
     </style>
 </head>
@@ -73,18 +71,9 @@
             <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
             <div><label>Address</label><input type="text" id="address" placeholder="Contact Details"></div>
             
-            <div class="multi-input-group" style="border-color: var(--vanda);">
-                <label>Vanda Bags</label>
-                <input type="number" id="qtyV" onkeyup="autoBill()" placeholder="0">
-            </div>
-            <div class="multi-input-group" style="border-color: var(--mineral);">
-                <label>Mineral Bags</label>
-                <input type="number" id="qtyM" onkeyup="autoBill()" placeholder="0">
-            </div>
-            <div class="multi-input-group" style="border-color: var(--umb);">
-                <label>UMB Bags</label>
-                <input type="number" id="qtyU" onkeyup="autoBill()" placeholder="0">
-            </div>
+            <div class="multi-input-group" style="border-color: var(--vanda);"><label>Vanda Bags</label><input type="number" id="qtyV" onkeyup="autoBill()" placeholder="0"></div>
+            <div class="multi-input-group" style="border-color: var(--mineral);"><label>Mineral Bags</label><input type="number" id="qtyM" onkeyup="autoBill()" placeholder="0"></div>
+            <div class="multi-input-group" style="border-color: var(--umb);"><label>UMB Bags</label><input type="number" id="qtyU" onkeyup="autoBill()" placeholder="0"></div>
 
             <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#eee; font-weight:bold;"></div>
             <div><label>Paid</label><input type="number" id="payment" placeholder="Amount Paid"></div>
@@ -93,7 +82,7 @@
         
         <div class="btn-row">
             <div style="flex:2; display:flex; gap:5px;">
-                <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name or CNIC..." style="width:100%;">
+                <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name/Phone..." style="width:100%;">
                 <select id="rowsPerPage" onchange="resetPage(); renderTable();" style="width:100px;">
                     <option value="10">10 Rows</option>
                     <option value="25">25 Rows</option>
@@ -101,7 +90,7 @@
                 </select>
             </div>
             <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
-            <button class="btn-print" onclick="window.print()">🖨️ Print Report</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Print</button>
         </div>
     </div>
 
@@ -115,7 +104,7 @@
                     <th>Total Bags</th>
                     <th>Grand Total</th>
                     <th>Paid</th>
-                    <th class="no-print">Action</th>
+                    <th class="no-print" style="width: 80px;">Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -148,6 +137,7 @@
     let currentPage = 1;
 
     function init() {
+        // Sync Settings
         db.collection("settings").doc("main").onSnapshot(doc => {
             if(doc.exists()) {
                 settings = doc.data();
@@ -161,6 +151,7 @@
             renderTable();
         });
 
+        // Sync Records
         db.collection("records").orderBy("date", "desc").onSnapshot(snap => {
             records = [];
             snap.forEach(doc => records.push({id: doc.id, ...doc.data()}));
@@ -184,22 +175,19 @@
             totalBill: parseInt(document.getElementById('totalBill').value) || 0,
             pay: parseInt(document.getElementById('payment').value) || 0
         };
-
         if(!data.name) return alert("Pehle Name enter karen!");
-
         if(id) await db.collection("records").doc(id).update(data);
         else await db.collection("records").add(data);
-        
         clearInputs();
     }
 
     async function updateSettingsCloud() {
-        settings = {
+        const s = {
             Vanda: { st: parseInt(document.getElementById('stVanda').value)||0, rt: parseInt(document.getElementById('rtVanda').value)||0 },
             Mineral: { st: parseInt(document.getElementById('stMineral').value)||0, rt: parseInt(document.getElementById('rtMineral').value)||0 },
             UMB: { st: parseInt(document.getElementById('stUMB').value)||0, rt: parseInt(document.getElementById('rtUMB').value)||0 }
         };
-        await db.collection("settings").doc("main").set(settings);
+        await db.collection("settings").doc("main").set(s);
     }
 
     function autoBill() {
@@ -220,22 +208,27 @@
             (r.phone && r.phone.includes(search))
         );
         
+        // Stock Calculation
         let used = { V:0, M:0, U:0 };
         records.forEach(r => { 
-            used.V += (parseInt(r.qtyV) || 0); 
-            used.M += (parseInt(r.qtyM) || 0); 
-            used.U += (parseInt(r.qtyU) || 0); 
+            used.V += (parseInt(r.qtyV) || 0); used.M += (parseInt(r.qtyM) || 0); used.U += (parseInt(r.qtyU) || 0); 
         });
-
         document.getElementById('remVanda').innerText = "Rem: " + ((parseInt(settings.Vanda.st) || 0) - used.V);
         document.getElementById('remMineral').innerText = "Rem: " + ((parseInt(settings.Mineral.st) || 0) - used.M);
         document.getElementById('remUMB').innerText = "Rem: " + ((parseInt(settings.UMB.st) || 0) - used.U);
 
+        // Pagination
         let totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
         let paginatedItems = filtered.slice((currentPage-1)*rowsPerPage, currentPage*rowsPerPage);
 
         let html = '';
         let sums = {qty:0, bill:0, pay:0};
+        filtered.forEach(r => { 
+            sums.qty += ((parseInt(r.qtyV)||0) + (parseInt(r.qtyM)||0) + (parseInt(r.qtyU)||0)); 
+            sums.bill += (parseInt(r.totalBill)||0); 
+            sums.pay += (parseInt(r.pay)||0); 
+        });
 
         paginatedItems.forEach((r) => {
             let itemsStr = '';
@@ -243,13 +236,9 @@
             if(r.qtyM > 0) itemsStr += `<span class="badge bg-mineral">M: ${r.qtyM}</span>`;
             if(r.qtyU > 0) itemsStr += `<span class="badge bg-umb">U: ${r.qtyU}</span>`;
 
-            sums.qty += ((parseInt(r.qtyV)||0) + (parseInt(r.qtyM)||0) + (parseInt(r.qtyU)||0));
-            sums.bill += (parseInt(r.totalBill)||0);
-            sums.pay += (parseInt(r.pay)||0);
-
             html += `<tr>
                 <td>${r.date}</td>
-                <td><strong>${r.name}</strong><br><small>${r.phone || 'No Phone'}<br>${r.cnic || ''}</small></td>
+                <td><strong>${r.name}</strong><br><small>${r.phone || ''}<br>${r.cnic || ''}</small></td>
                 <td>${itemsStr}</td>
                 <td>${(parseInt(r.qtyV)||0) + (parseInt(r.qtyM)||0) + (parseInt(r.qtyU)||0)}</td>
                 <td>${r.totalBill}</td>
@@ -263,6 +252,14 @@
 
         document.getElementById('tableBody').innerHTML = html;
         document.getElementById('pageNumber').innerText = `Page ${currentPage} of ${totalPages}`;
+        document.getElementById('tableFoot').innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align:right"><strong>FILTERED TOTAL:</strong></td>
+                <td><strong>${sums.qty}</strong></td>
+                <td><strong>${sums.bill}</strong></td>
+                <td style="color:green"><strong>${sums.pay}</strong></td>
+                <td class="no-print"></td>
+            </tr>`;
     }
 
     function nextPage() { currentPage++; renderTable(); }
@@ -286,15 +283,8 @@
     }
 
     async function deleteEntry(id) { if(confirm("Delete bill?")) await db.collection("records").doc(id).delete(); }
-
-    function clearInputs() {
-        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
-    }
-
-    function exportExcel() {
-        var wb = XLSX.utils.table_to_book(document.getElementById("vandaTable"));
-        XLSX.writeFile(wb, "Vanda_Records.xlsx");
-    }
+    function clearInputs() { ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = ''); }
+    function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("vandaTable")), "Shop_Data.xlsx"); }
 
     document.getElementById('date').valueAsDate = new Date();
     init();
