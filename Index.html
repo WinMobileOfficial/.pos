@@ -3,151 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM GOVT | Vanda Pro</title>
+    <title>ERP | SYSTEM GOVT Vanda Management</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        :root { --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; --success: #1e8e3e; --danger: #d93025; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f1f3f4; padding: 10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        :root { 
+            --primary: #1a73e8; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; 
+            --success: #1e8e3e; --danger: #d93025; --dark: #202124; --light: #f8f9fa; 
+        }
         
-        /* Inventory Section */
-        .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; position: relative; }
-        .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; font-weight: bold; padding: 4px; color: #333; }
-        .btn-lock { background: #000; color: #fff; border: none; font-size: 10px; padding: 2px 5px; border-radius: 4px; cursor: pointer; margin-top: 5px; width: 100%; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #eef2f7; color: var(--dark); line-height: 1.6; }
+        
+        /* Sidebar/Header */
+        .header { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .header h2 { margin: 0; font-weight: 700; color: var(--primary); font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
-        /* Form Section */
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 14px; }
-        label { font-size: 11px; font-weight: bold; color: #555; display: block; margin-bottom: 2px; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-save { background: var(--success); color: white; flex: 2; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-reset { background: var(--danger); color: white; flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        /* Table Layout */
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; min-width: 900px; table-layout: fixed; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; word-wrap: break-word; }
-        .col-date { width: 110px; }
-        .col-info { width: 220px; }
-        .col-items { width: 180px; }
-        .col-bill { width: 100px; }
-        .col-pay { width: 100px; }
-        .col-act { width: 90px; }
+        /* Dashboard Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
+        .stat-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; color: #5f6368; }
+        .stat-card .val { font-size: 24px; font-weight: 800; margin: 10px 0; }
+        .stat-card input { width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
+        .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; pt: 10px; font-size: 12px; }
 
-        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; margin: 2px; display: inline-block; font-weight: bold; }
+        /* Forms */
+        .glass-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .form-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; }
         
-        /* Auto Page Break Logic */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .field-group { margin-bottom: 15px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; margin-bottom: 5px; }
+        .field-group input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; transition: 0.2s; box-sizing: border-box; }
+        .field-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+        
+        .action-btns { display: flex; gap: 12px; margin-top: 10px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; flex: 2; justify-content: center; }
+        .btn-reset { background: #f1f3f4; color: #5f6368; flex: 1; justify-content: center; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Table Design */
+        .table-responsive { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        thead { background: #f8f9fa; }
+        th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; }
+        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
+        tr:hover { background-color: #fcfdfe; }
+        
+        .badge { padding: 5px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; margin-right: 5px; }
+        
+        /* Print Header - Professional Letterhead */
+        .print-header { display: none; text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
+        .print-header h1 { margin: 0; color: #000; font-size: 32px; letter-spacing: 2px; }
+
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white; padding: 0; }
-            table { min-width: 100% !important; page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
-            .p-boxes { display: flex !important; justify-content: space-around; margin: 20px 0; gap: 10px; }
-            .p-box { border: 2px solid #000; padding: 10px; width: 30%; text-align: center; border-radius: 10px; }
+            .container { max-width: 100%; width: 100%; margin: 0; }
+            table { border: 1px solid #000; font-size: 11px; }
+            th, td { border: 1px solid #ccc; padding: 8px; }
+            @page { size: landscape; margin: 1cm; }
         }
-        .print-only { display: none; }
     </style>
 </head>
 <body>
 
-<div id="mainUI">
-    <h2 class="no-print" style="text-align:center; color:var(--vanda); margin:0 0 10px 0;">🏛️ SYSTEM GOVT</h2>
-    
-    <div class="card no-print">
-        <div class="inventory-grid">
-            <div class="inv-box" style="background:var(--vanda)">
-                Vanda Stock<br><input type="number" id="stV">Rate<input type="number" id="rtV">
-                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
-                <div id="remV">Remaining: 0</div>
+<div class="header no-print">
+    <h2><i class="fas fa-landmark"></i> SYSTEM GOVT <span style="font-weight:300; font-size:16px; color:#888;">| Vanda ERP</span></h2>
+    <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" onclick="downloadExcel()" style="padding:8px 15px; font-size:12px; background:#1e8e3e;">
+            <i class="fas fa-file-excel"></i> Export Backup
+        </button>
+        <button class="btn btn-primary" onclick="window.print()" style="padding:8px 15px; font-size:12px;">
+            <i class="fas fa-print"></i> Print Report
+        </button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats-grid no-print">
+        <div class="stat-card" style="border-color: var(--vanda);">
+            <h4>Vanda Stock</h4>
+            <div class="val" id="dispV">0 Bags</div>
+            <div class="footer">
+                <span>Set Rate: <input type="number" id="rtV" placeholder="Rs"></span>
+                <span>Limit: <input type="number" id="stV" placeholder="Stock"></span>
             </div>
-            <div class="inv-box" style="background:var(--mineral)">
-                Mineral Stock<br><input type="number" id="stM">Rate<input type="number" id="rtM">
-                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
-                <div id="remM">Remaining: 0</div>
+            <button class="btn-lock" onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+        </div>
+        <div class="stat-card" style="border-color: var(--mineral);">
+            <h4>Mineral Stock</h4>
+            <div class="val" id="dispM">0 Bags</div>
+            <div class="footer">
+                <span>Set Rate: <input type="number" id="rtM"></span>
+                <span>Limit: <input type="number" id="stM"></span>
             </div>
-            <div class="inv-box" style="background:var(--umb)">
-                UMB Stock<br><input type="number" id="stU">Rate<input type="number" id="rtU">
-                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
-                <div id="remU">Remaining: 0</div>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+        </div>
+        <div class="stat-card" style="border-color: var(--umb);">
+            <h4>UMB Stock</h4>
+            <div class="val" id="dispU">0 Bags</div>
+            <div class="footer">
+                <span>Set Rate: <input type="number" id="rtU"></span>
+                <span>Limit: <input type="number" id="stU"></span>
             </div>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
         </div>
     </div>
 
-    <div class="card no-print">
-        <div class="form-grid">
-            <input type="hidden" id="editId">
-            <div><label>Date</label><input type="date" id="date"></div>
-            <div><label>Customer Name</label><input type="text" id="name" placeholder="Full Name"></div>
-            <div><label>Phone</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
-            <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
-            <div><label>Vanda Bags</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="0"></div>
-            <div><label>Mineral Bags</label><input type="number" id="qtyM" oninput="autoBill()" placeholder="0"></div>
-            <div><label>UMB Bags</label><input type="number" id="qtyU" oninput="autoBill()" placeholder="0"></div>
-            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f8f9fa; border:2px solid blue; font-weight:bold;"></div>
-            <div style="grid-column: span 2;"><label>Paid Amount</label><input type="number" id="payment" placeholder="Amount Paid"></div>
+    <div class="glass-card no-print">
+        <div class="form-title"><i class="fas fa-plus-circle"></i> Create New Sales Order</div>
+        <input type="hidden" id="editId">
+        <div class="grid-4">
+            <div class="field-group">
+                <label><i class="fas fa-calendar"></i> Date</label>
+                <input type="date" id="date">
+            </div>
+            <div class="field-group">
+                <label><i class="fas fa-user"></i> Customer Name</label>
+                <input type="text" id="name" placeholder="Full Name">
+            </div>
+            <div class="field-group">
+                <label><i class="fas fa-phone"></i> Phone Number</label>
+                <input type="text" id="phone" placeholder="03xx-xxxxxxx">
+            </div>
+            <div class="field-group">
+                <label><i class="fas fa-id-card"></i> CNIC (Optional)</label>
+                <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x">
+            </div>
         </div>
-        <div class="btn-group">
-            <button class="btn-save" onclick="save()">💾 Save Record</button>
-            <button class="btn-reset" onclick="resetForm()">🔄 Reset Form</button>
+        <div class="field-group">
+            <label><i class="fas fa-map-marker-alt"></i> Complete Address</label>
+            <input type="text" id="address" placeholder="Village, Tehsil, District info...">
         </div>
-        <div style="display:flex; gap:8px; margin-top:15px;">
-            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search Name/Phone..." style="flex:2">
-            <button onclick="window.print()" style="background:#1a73e8; color:white; border:none; padding:0 20px; border-radius:8px; cursor:pointer;">Print Report</button>
+        <div class="grid-4" style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+            <div class="field-group">
+                <label>Vanda Qty</label>
+                <input type="number" id="qtyV" oninput="autoBill()" placeholder="0">
+            </div>
+            <div class="field-group">
+                <label>Mineral Qty</label>
+                <input type="number" id="qtyM" oninput="autoBill()" placeholder="0">
+            </div>
+            <div class="field-group">
+                <label>UMB Qty</label>
+                <input type="number" id="qtyU" oninput="autoBill()" placeholder="0">
+            </div>
+            <div class="field-group">
+                <label>Total Receivable</label>
+                <input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800; border:2px solid var(--primary);">
+            </div>
+        </div>
+        <div class="field-group">
+            <label><i class="fas fa-money-bill-wave"></i> Payment Received</label>
+            <input type="number" id="payment" placeholder="Amount Customer Paid">
+        </div>
+        
+        <div class="action-btns">
+            <button class="btn btn-reset" onclick="resetForm()">Reset</button>
+            <button class="btn btn-primary" onclick="save()"><i class="fas fa-save"></i> Save Transaction</button>
         </div>
     </div>
 
-    <div style="overflow-x:auto;">
-        <table id="mainTable">
-            <thead>
-                <tr>
-                    <th class="col-date">Date</th>
-                    <th class="col-info">Customer Info</th>
-                    <th class="col-items">Items Sold</th>
-                    <th class="col-bill">Total Bill</th>
-                    <th class="col-pay">Paid</th>
-                    <th class="col-act no-print">Action</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot" style="background:#f1f3f4; font-weight:bold; border-top:2px solid #333;"></tfoot>
-        </table>
-    </div>
+    <div class="glass-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div class="form-title" style="margin:0;"><i class="fas fa-list"></i> Transaction Ledger</div>
+            <div class="no-print">
+                <input type="text" id="search" onkeyup="render()" placeholder="🔍 Filter ledger..." style="padding:10px; border-radius:8px; border:1px solid #ddd; width:250px;">
+            </div>
+        </div>
 
-    <div class="print-only">
-        <h1 style="text-align:center; margin:0;">SYSTEM GOVT</h1>
-        <h3 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-top:5px;">VANDA MANAGEMENT - SALES SUMMARY</h3>
-        <div class="p-boxes" id="pBoxes"></div>
+        <div class="table-responsive">
+            <div class="print-only print-header">
+                <h1>SYSTEM GOVT</h1>
+                <p>Vanda & Mineral Stock Management System - Sales Report</p>
+                <small id="printDate"></small>
+            </div>
+
+            <table id="mainTable">
+                <thead>
+                    <tr>
+                        <th width="100">Date</th>
+                        <th width="180">Customer Info</th>
+                        <th width="200">Address</th>
+                        <th width="150">Items Sold</th>
+                        <th>Total Bill</th>
+                        <th>Paid</th>
+                        <th class="no-print" width="100">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFoot" style="background:#f8f9fa; font-weight:800; border-top:2px solid #ddd;"></tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY",
-        authDomain: "system-govt.firebaseapp.com",
-        projectId: "system-govt",
-        storageBucket: "system-govt.firebasestorage.app",
-        messagingSenderId: "1033817025402",
-        appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3"
-    };
+    // Config
+    const firebaseConfig = { apiKey: "AIzaSyB1re1BsRAVHQZkXCQE1uUIXNkx2OE-UKDY", authDomain: "system-govt.firebaseapp.com", projectId: "system-govt", storageBucket: "system-govt.firebasestorage.app", messagingSenderId: "1033817025402", appId: "1:1033817025402:web:38a51c098aa2fd4d19c4c3" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
+    
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
-    // Function to update total bill automatically
+    // Auto Calculation
     function autoBill() {
-        const qV = parseFloat(document.getElementById('qtyV').value) || 0;
-        const qM = parseFloat(document.getElementById('qtyM').value) || 0;
-        const qU = parseFloat(document.getElementById('qtyU').value) || 0;
-        const bill = (qV*(settings.V?.rt||0)) + (qM*(settings.M?.rt||0)) + (qU*(settings.U?.rt||0));
-        document.getElementById('totalBill').value = Math.round(bill);
+        const qV = parseInt(document.getElementById('qtyV').value) || 0;
+        const qM = parseInt(document.getElementById('qtyM').value) || 0;
+        const qU = parseInt(document.getElementById('qtyU').value) || 0;
+        const total = (qV * settings.V.rt) + (qM * settings.M.rt) + (qU * settings.U.rt);
+        document.getElementById('totalBill').value = total;
     }
 
-    // Manual Save for Settings (Fix for 0 balance)
+    // Save Stock Settings
     async function upSet() {
         const s = {
             V: {st: parseInt(document.getElementById('stV').value)||0, rt: parseInt(document.getElementById('rtV').value)||0},
@@ -155,14 +231,10 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Stock & Rates Locked in Cloud! 🔒");
+        alert("Success: Cloud Stock Updated!");
     }
 
-    function resetForm() {
-        ['editId','name','phone','cnic','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('date').valueAsDate = new Date();
-    }
-
+    // Save Transaction
     async function save() {
         const id = document.getElementById('editId').value;
         const data = {
@@ -170,13 +242,15 @@
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
             cnic: document.getElementById('cnic').value,
+            address: document.getElementById('address').value,
             qtyV: parseInt(document.getElementById('qtyV').value)||0,
             qtyM: parseInt(document.getElementById('qtyM').value)||0,
             qtyU: parseInt(document.getElementById('qtyU').value)||0,
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name) return alert("Enter Customer Name!");
+        if(!data.name || !data.date) return alert("Error: Name and Date are required!");
+        
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
@@ -188,42 +262,48 @@
         let uV=0, uM=0, uU=0, gB=0, gP=0;
         records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
 
-        const remV = Math.max(0, (settings.V?.st||0) - uV);
-        const remM = Math.max(0, (settings.M?.st||0) - uM);
-        const remU = Math.max(0, (settings.U?.st||0) - uU);
-
-        document.getElementById('remV').innerText = "Remaining: " + remV;
-        document.getElementById('remM').innerText = "Remaining: " + remM;
-        document.getElementById('remU').innerText = "Remaining: " + remU;
-
-        document.getElementById('pBoxes').innerHTML = `
-            <div class="p-box"><h4>VANDA</h4>Sold: ${uV}<br>Remaining: ${remV}</div>
-            <div class="p-box"><h4>MINERAL</h4>Sold: ${uM}<br>Remaining: ${remM}</div>
-            <div class="p-box"><h4>UMB</h4>Sold: ${uU}<br>Remaining: ${remU}</div>
-        `;
+        // Update Dashboard Cards
+        document.getElementById('dispV').innerText = (settings.V.st - uV) + " Bags Left";
+        document.getElementById('dispM').innerText = (settings.M.st - uM) + " Bags Left";
+        document.getElementById('dispU').innerText = (settings.U.st - uU) + " Bags Left";
 
         let h = '';
         filtered.forEach(r => {
             gB += (r.total||0); gP += (r.pay||0);
-            h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
-            <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}</td>
-            <td>Rs. ${r.total}</td><td style="color:green; font-weight:bold;">Rs. ${r.pay}</td>
-            <td class="no-print"><button onclick="edit('${r.id}')">✏️</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
-        });
-
-        document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `
-            <tr>
-                <td colspan="2" style="text-align:right">TOTAL BAGS & GRAND TOTAL:</td>
+            h += `<tr>
+                <td><b>${r.date}</b></td>
+                <td><b>${r.name}</b><br><small style="color:#666">${r.phone}</small></td>
+                <td><small>${r.address || 'No Address'}</small></td>
                 <td>
-                    <span class="badge" style="background:var(--vanda)">V: ${uV}</span><br>
-                    <span class="badge" style="background:var(--mineral)">M: ${uM}</span><br>
-                    <span class="badge" style="background:var(--umb)">U: ${uU}</span>
+                    ${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
+                    ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
+                    ${r.qtyU?`<span class="badge" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}
                 </td>
-                <td>Rs. ${gB}</td>
-                <td style="color:green">Rs. ${gP}</td>
-                <td class="no-print"></td>
+                <td><b>Rs. ${r.total.toLocaleString()}</b></td>
+                <td style="color:var(--success)"><b>Rs. ${r.pay.toLocaleString()}</b></td>
+                <td class="no-print">
+                    <button onclick="edit('${r.id}')" style="border:none; background:#e8f0fe; color:var(--primary); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-edit"></i></button>
+                    <button onclick="del('${r.id}')" style="border:none; background:#fce8e6; color:var(--danger); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </td>
             </tr>`;
+        });
+        document.getElementById('tableBody').innerHTML = h;
+        document.getElementById('tableFoot').innerHTML = `<tr>
+            <td colspan="3" style="text-align:right">TOTAL SUMMARY:</td>
+            <td>
+                <span style="color:var(--vanda)">V: ${uV}</span> | 
+                <span style="color:var(--mineral)">M: ${uM}</span> | 
+                <span style="color:var(--umb)">U: ${uU}</span>
+            </td>
+            <td>Rs. ${gB.toLocaleString()}</td>
+            <td style="color:var(--success)">Rs. ${gP.toLocaleString()}</td>
+            <td class="no-print"></td>
+        </tr>`;
+    }
+
+    function resetForm() {
+        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('date').valueAsDate = new Date();
     }
 
     function edit(id) {
@@ -232,16 +312,30 @@
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone;
-        document.getElementById('cnic').value = r.cnic;
+        document.getElementById('address').value = r.address || '';
         document.getElementById('qtyV').value = r.qtyV;
         document.getElementById('qtyM').value = r.qtyM;
         document.getElementById('qtyU').value = r.qtyU;
-        autoBill(); window.scrollTo(0,0);
+        document.getElementById('payment').value = r.pay;
+        autoBill();
+        window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Delete Record?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Confirm: Delete this record permanently?")) await db.collection("records").doc(id).delete(); }
 
-    // Listen for Settings
+    function downloadExcel() {
+        const exportData = records.map(r => ({
+            "Order Date": r.date, "Customer": r.name, "Contact": r.phone, "Address": r.address, 
+            "Vanda (Bags)": r.qtyV, "Mineral (Bags)": r.qtyM, "UMB (Bags)": r.qtyU, 
+            "Total Bill": r.total, "Received Amount": r.pay, "Balance": r.total - r.pay
+        }));
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SalesLedger");
+        XLSX.writeFile(wb, "SystemGovt_Full_Backup.xlsx");
+    }
+
+    // Realtime Listeners
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
@@ -252,13 +346,15 @@
         }
     });
 
-    // Listen for Records
     db.collection("records").orderBy("date","desc").onSnapshot(s => {
         records = s.docs.map(d => ({id:d.id, ...d.data()}));
         render();
     });
 
     document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
 </script>
+
 </body>
-</html>
+                                                                                                        </html>
+                                                                                                        
