@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda System | Full Features Cloud</title>
+    <title>Vanda System | Full Cloud Version</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -13,50 +13,47 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: #f1f3f4; padding: 10px; color: #333; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 12px; }
+        .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; }
         .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; padding: 4px; font-weight: bold; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
         .multi-input-group { background: #f8f9fa; padding: 10px; border-radius: 8px; border-top: 3px solid #ccc; }
-        input, select { padding: 10px; border: 1px solid #dadce0; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
+        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; width: 100%; box-sizing: border-box; }
         .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-        button { cursor: pointer; padding: 10px; border: none; border-radius: 6px; font-weight: 600; flex: 1; transition: 0.2s; }
-        .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 16px; }
-        .btn-excel { background: #e6f4ea; color: #1e8e3e; border: 1px solid #1e8e3e; }
-        .btn-print { background: var(--primary); color: white; }
-        .btn-edit { background: #fff3e0; color: #e65100; font-size: 10px; padding: 4px 8px; width: 100%; margin-bottom: 5px; }
-        .btn-del { background: #fce8e6; color: var(--danger); font-size: 10px; padding: 4px 8px; width: 100%; }
-        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
+        button { cursor: pointer; padding: 12px; border: none; border-radius: 8px; font-weight: 600; flex: 1; transition: 0.2s; }
+        .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-page { background: #fff; border: 1px solid #ddd; padding: 8px 15px; flex: none; }
         .table-container { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: top; }
-        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; margin-right: 2px; }
+        td { padding: 12px; border-bottom: 1px solid #f1f3f4; font-size: 13px; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; font-weight: bold; display: inline-block; }
         .bg-vanda { background: var(--vanda); } .bg-mineral { background: var(--mineral); } .bg-umb { background: var(--umb); }
-        @media print { .no-print { display: none !important; } body { background: white; padding: 0; } table { width: 100% !important; border: 1px solid #000; } }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 15px; align-items: center; }
+        @media print { .no-print { display: none !important; } body { background: white; } }
     </style>
 </head>
 <body>
 
-<div id="loader" style="text-align:center; padding:50px; font-weight:bold; color:var(--primary);">Connecting to System Govt Cloud... ☁️</div>
+<div id="loader" style="text-align:center; padding:50px; font-weight:bold; color:var(--primary);">Connecting to System Govt... ☁️</div>
 
 <div id="mainUI" style="display:none;">
     <div class="card no-print">
         <h3 style="margin:0 0 10px 0; font-size:14px;">📊 Cloud Stock & Rates</h3>
         <div class="inventory-grid">
             <div class="inv-box" style="background:var(--vanda)">Vanda<br>
-                Stock: <input type="number" id="stVanda" onchange="updateSettingsCloud()">
-                Rate: <input type="number" id="rtVanda" onchange="updateSettingsCloud()">
-                <div id="remVanda" style="font-weight:bold;">Rem: 0</div>
+                Stock: <input type="number" id="stVanda" onchange="upSet()">
+                Rate: <input type="number" id="rtVanda" onchange="upSet()">
+                <div id="remVanda" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
             </div>
             <div class="inv-box" style="background:var(--mineral)">Mineral<br>
-                Stock: <input type="number" id="stMineral" onchange="updateSettingsCloud()">
-                Rate: <input type="number" id="rtMineral" onchange="updateSettingsCloud()">
-                <div id="remMineral" style="font-weight:bold;">Rem: 0</div>
+                Stock: <input type="number" id="stMineral" onchange="upSet()">
+                Rate: <input type="number" id="rtMineral" onchange="upSet()">
+                <div id="remMineral" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
             </div>
             <div class="inv-box" style="background:var(--umb)">UMB Block<br>
-                Stock: <input type="number" id="stUMB" onchange="updateSettingsCloud()">
-                Rate: <input type="number" id="rtUMB" onchange="updateSettingsCloud()">
-                <div id="remUMB" style="font-weight:bold;">Rem: 0</div>
+                Stock: <input type="number" id="stUMB" onchange="upSet()">
+                Rate: <input type="number" id="rtUMB" onchange="upSet()">
+                <div id="remUMB" style="font-weight:bold; margin-top:5px;">Rem: 0</div>
             </div>
         </div>
     </div>
@@ -64,33 +61,27 @@
     <div class="card no-print">
         <h2 style="margin:0 0 10px 0; color:var(--primary);">📦 Shop Management Form</h2>
         <div class="form-grid">
-            <input type="hidden" id="editId" value="">
+            <input type="hidden" id="editId">
             <div><label>Date</label><input type="date" id="date"></div>
             <div><label>Name</label><input type="text" id="name" placeholder="Client Name"></div>
             <div><label>Phone Number</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
-            <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
-            <div><label>Address</label><input type="text" id="address" placeholder="Contact Details"></div>
-            
             <div class="multi-input-group" style="border-color: var(--vanda);"><label>Vanda Bags</label><input type="number" id="qtyV" onkeyup="autoBill()" placeholder="0"></div>
             <div class="multi-input-group" style="border-color: var(--mineral);"><label>Mineral Bags</label><input type="number" id="qtyM" onkeyup="autoBill()" placeholder="0"></div>
             <div class="multi-input-group" style="border-color: var(--umb);"><label>UMB Bags</label><input type="number" id="qtyU" onkeyup="autoBill()" placeholder="0"></div>
-
             <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#eee; font-weight:bold;"></div>
             <div><label>Paid</label><input type="number" id="payment" placeholder="Amount Paid"></div>
         </div>
-        <button class="btn-add" id="mainBtn" onclick="saveToCloud()">💾 Save Combined Bill to Cloud</button>
+        <button class="btn-add" onclick="save()">💾 Save Combined Bill to Cloud</button>
         
         <div class="btn-row">
-            <div style="flex:2; display:flex; gap:5px;">
-                <input type="text" id="search" onkeyup="resetPage(); renderTable();" placeholder="🔍 Search Name/Phone..." style="width:100%;">
-                <select id="rowsPerPage" onchange="resetPage(); renderTable();" style="width:100px;">
-                    <option value="10">10 Rows</option>
-                    <option value="25">25 Rows</option>
-                    <option value="100000">All</option>
-                </select>
-            </div>
-            <button class="btn-excel" onclick="exportExcel()">📊 Excel</button>
-            <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+            <input type="text" id="search" onkeyup="curPage=1; render()" placeholder="🔍 Search Name/Phone..." style="flex:2;">
+            <select id="rowsPerPage" onchange="curPage=1; render()" style="width:100px;">
+                <option value="10">10 Rows</option>
+                <option value="50">50 Rows</option>
+                <option value="10000">All</option>
+            </select>
+            <button style="background:#e6f4ea; color:#1e8e3e; border:1px solid #1e8e3e;" onclick="exportExcel()">📊 Excel</button>
+            <button style="background:var(--primary); color:white;" onclick="window.print()">🖨️ Print</button>
         </div>
     </div>
 
@@ -104,18 +95,18 @@
                     <th>Total Bags</th>
                     <th>Grand Total</th>
                     <th>Paid</th>
-                    <th class="no-print" style="width: 80px;">Action</th>
+                    <th class="no-print">Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot"></tfoot>
+            <tfoot id="tableFoot" style="background:#f9f9f9; font-weight:bold;"></tfoot>
         </table>
     </div>
 
     <div class="pagination no-print">
-        <button class="btn-page" onclick="prevPage()">⬅️ Prev</button>
-        <span class="page-info" id="pageNumber">Page 1</span>
-        <button class="btn-page" onclick="nextPage()">Next ➡️</button>
+        <button class="btn-page" onclick="changePage(-1)">⬅️ Prev</button>
+        <span id="pageInfo">Page 1</span>
+        <button class="btn-page" onclick="changePage(1)">Next ➡️</button>
     </div>
 </div>
 
@@ -132,162 +123,102 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let records = [];
-    let settings = { Vanda:{st:0, rt:0}, Mineral:{st:0, rt:0}, UMB:{st:0, rt:0} };
-    let currentPage = 1;
+    let records = [], settings = {}, curPage = 1;
 
-    function init() {
-        // Sync Settings
-        db.collection("settings").doc("main").onSnapshot(doc => {
-            if(doc.exists()) {
-                settings = doc.data();
-                document.getElementById('stVanda').value = settings.Vanda.st || 0;
-                document.getElementById('rtVanda').value = settings.Vanda.rt || 0;
-                document.getElementById('stMineral').value = settings.Mineral.st || 0;
-                document.getElementById('rtMineral').value = settings.Mineral.rt || 0;
-                document.getElementById('stUMB').value = settings.UMB.st || 0;
-                document.getElementById('rtUMB').value = settings.UMB.rt || 0;
-            }
-            renderTable();
-        });
-
-        // Sync Records
-        db.collection("records").orderBy("date", "desc").onSnapshot(snap => {
-            records = [];
-            snap.forEach(doc => records.push({id: doc.id, ...doc.data()}));
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('mainUI').style.display = 'block';
-            renderTable();
-        });
-    }
-
-    async function saveToCloud() {
-        const id = document.getElementById('editId').value;
-        const data = {
-            date: document.getElementById('date').value,
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            cnic: document.getElementById('cnic').value,
-            address: document.getElementById('address').value,
-            qtyV: parseInt(document.getElementById('qtyV').value) || 0,
-            qtyM: parseInt(document.getElementById('qtyM').value) || 0,
-            qtyU: parseInt(document.getElementById('qtyU').value) || 0,
-            totalBill: parseInt(document.getElementById('totalBill').value) || 0,
-            pay: parseInt(document.getElementById('payment').value) || 0
-        };
-        if(!data.name) return alert("Pehle Name enter karen!");
-        if(id) await db.collection("records").doc(id).update(data);
-        else await db.collection("records").add(data);
-        clearInputs();
-    }
-
-    async function updateSettingsCloud() {
+    async function upSet() {
         const s = {
-            Vanda: { st: parseInt(document.getElementById('stVanda').value)||0, rt: parseInt(document.getElementById('rtVanda').value)||0 },
-            Mineral: { st: parseInt(document.getElementById('stMineral').value)||0, rt: parseInt(document.getElementById('rtMineral').value)||0 },
-            UMB: { st: parseInt(document.getElementById('stUMB').value)||0, rt: parseInt(document.getElementById('rtUMB').value)||0 }
+            V: {st: parseInt(document.getElementById('stVanda').value)||0, rt: parseInt(document.getElementById('rtVanda').value)||0},
+            M: {st: parseInt(document.getElementById('stMineral').value)||0, rt: parseInt(document.getElementById('rtMineral').value)||0},
+            U: {st: parseInt(document.getElementById('stUMB').value)||0, rt: parseInt(document.getElementById('rtUMB').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
     }
 
     function autoBill() {
-        const qV = parseInt(document.getElementById('qtyV').value) || 0;
-        const qM = parseInt(document.getElementById('qtyM').value) || 0;
-        const qU = parseInt(document.getElementById('qtyU').value) || 0;
-        const total = (qV * (settings.Vanda.rt || 0)) + (qM * (settings.Mineral.rt || 0)) + (qU * (settings.UMB.rt || 0));
-        document.getElementById('totalBill').value = total;
+        const qV = parseInt(document.getElementById('qtyV').value)||0;
+        const qM = parseInt(document.getElementById('qtyM').value)||0;
+        const qU = parseInt(document.getElementById('qtyU').value)||0;
+        document.getElementById('totalBill').value = (qV*(settings.V?.rt||0)) + (qM*(settings.M?.rt||0)) + (qU*(settings.U?.rt||0));
     }
 
-    function renderTable() {
-        const search = document.getElementById('search').value.toLowerCase();
-        const rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
-        
-        let filtered = records.filter(r => 
-            (r.name && r.name.toLowerCase().includes(search)) || 
-            (r.cnic && r.cnic.includes(search)) ||
-            (r.phone && r.phone.includes(search))
-        );
-        
-        // Stock Calculation
-        let used = { V:0, M:0, U:0 };
-        records.forEach(r => { 
-            used.V += (parseInt(r.qtyV) || 0); used.M += (parseInt(r.qtyM) || 0); used.U += (parseInt(r.qtyU) || 0); 
-        });
-        document.getElementById('remVanda').innerText = "Rem: " + ((parseInt(settings.Vanda.st) || 0) - used.V);
-        document.getElementById('remMineral').innerText = "Rem: " + ((parseInt(settings.Mineral.st) || 0) - used.M);
-        document.getElementById('remUMB').innerText = "Rem: " + ((parseInt(settings.UMB.st) || 0) - used.U);
-
-        // Pagination
-        let totalPages = Math.ceil(filtered.length / rowsPerPage) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-        let paginatedItems = filtered.slice((currentPage-1)*rowsPerPage, currentPage*rowsPerPage);
-
-        let html = '';
-        let sums = {qty:0, bill:0, pay:0};
-        filtered.forEach(r => { 
-            sums.qty += ((parseInt(r.qtyV)||0) + (parseInt(r.qtyM)||0) + (parseInt(r.qtyU)||0)); 
-            sums.bill += (parseInt(r.totalBill)||0); 
-            sums.pay += (parseInt(r.pay)||0); 
-        });
-
-        paginatedItems.forEach((r) => {
-            let itemsStr = '';
-            if(r.qtyV > 0) itemsStr += `<span class="badge bg-vanda">V: ${r.qtyV}</span>`;
-            if(r.qtyM > 0) itemsStr += `<span class="badge bg-mineral">M: ${r.qtyM}</span>`;
-            if(r.qtyU > 0) itemsStr += `<span class="badge bg-umb">U: ${r.qtyU}</span>`;
-
-            html += `<tr>
-                <td>${r.date}</td>
-                <td><strong>${r.name}</strong><br><small>${r.phone || ''}<br>${r.cnic || ''}</small></td>
-                <td>${itemsStr}</td>
-                <td>${(parseInt(r.qtyV)||0) + (parseInt(r.qtyM)||0) + (parseInt(r.qtyU)||0)}</td>
-                <td>${r.totalBill}</td>
-                <td style="color:green; font-weight:bold;">${r.pay}</td>
-                <td class="no-print">
-                    <button class="btn-edit" onclick="editEntry('${r.id}')">Edit</button>
-                    <button class="btn-del" onclick="deleteEntry('${r.id}')">X</button>
-                </td>
-            </tr>`;
-        });
-
-        document.getElementById('tableBody').innerHTML = html;
-        document.getElementById('pageNumber').innerText = `Page ${currentPage} of ${totalPages}`;
-        document.getElementById('tableFoot').innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align:right"><strong>FILTERED TOTAL:</strong></td>
-                <td><strong>${sums.qty}</strong></td>
-                <td><strong>${sums.bill}</strong></td>
-                <td style="color:green"><strong>${sums.pay}</strong></td>
-                <td class="no-print"></td>
-            </tr>`;
+    async function save() {
+        const id = document.getElementById('editId').value;
+        const data = {
+            date: document.getElementById('date').value,
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            qtyV: parseInt(document.getElementById('qtyV').value)||0,
+            qtyM: parseInt(document.getElementById('qtyM').value)||0,
+            qtyU: parseInt(document.getElementById('qtyU').value)||0,
+            total: parseInt(document.getElementById('totalBill').value)||0,
+            pay: parseInt(document.getElementById('payment').value)||0
+        };
+        if(!data.name) return alert("Pehle Name enter karen!");
+        id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
+        ['editId','name','phone','qtyV','qtyM','qtyU','totalBill','payment'].forEach(f => document.getElementById(f).value = '');
     }
 
-    function nextPage() { currentPage++; renderTable(); }
-    function prevPage() { if(currentPage > 1) { currentPage--; renderTable(); } }
-    function resetPage() { currentPage = 1; }
+    function render() {
+        const term = document.getElementById('search').value.toLowerCase();
+        const rows = parseInt(document.getElementById('rowsPerPage').value);
+        const filtered = records.filter(r => (r.name||"").toLowerCase().includes(term) || (r.phone||"").includes(term));
+        
+        let used = {V:0, M:0, U:0};
+        records.forEach(r => { used.V += (r.qtyV||0); used.M += (r.qtyM||0); used.U += (r.qtyU||0); });
 
-    function editEntry(id) {
-        const r = records.find(rec => rec.id === id);
+        document.getElementById('remVanda').innerText = "Rem: " + ((settings.V?.st||0) - used.V);
+        document.getElementById('remMineral').innerText = "Rem: " + ((settings.M?.st||0) - used.M);
+        document.getElementById('remUMB').innerText = "Rem: " + ((settings.U?.st||0) - used.U);
+
+        const start = (curPage-1)*rows, paginated = filtered.slice(start, start+rows);
+        let h = '', s = {q:0, t:0, p:0}, totalPages = Math.ceil(filtered.length/rows) || 1;
+
+        paginated.forEach(r => {
+            s.q += ((r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0)); s.t += (r.total||0); s.p += (r.pay||0);
+            h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
+            <td>${r.qtyV?`<span class="badge bg-vanda">V:${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge bg-mineral">M:${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge bg-umb">U:${r.qtyU}</span>`:''}</td>
+            <td>${(r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0)}</td><td>${r.total}</td><td style="color:green; font-weight:bold;">${r.pay}</td>
+            <td class="no-print"><button onclick="edit('${r.id}')" style="background:#eee; font-size:10px; padding:4px;">Edit</button> <button onclick="del('${r.id}')" style="background:#fce8e6; color:red; font-size:10px; padding:4px;">X</button></td></tr>`;
+        });
+        document.getElementById('tableBody').innerHTML = h;
+        document.getElementById('pageInfo').innerText = `Page ${curPage} of ${totalPages}`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">Page Totals:</td><td>${s.q}</td><td>${s.t}</td><td style="color:green">${s.p}</td><td></td></tr>`;
+    }
+
+    function edit(id) {
+        const r = records.find(x => x.id === id);
         document.getElementById('editId').value = r.id;
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
-        document.getElementById('phone').value = r.phone || '';
-        document.getElementById('cnic').value = r.cnic || '';
-        document.getElementById('address').value = r.address || '';
-        document.getElementById('qtyV').value = r.qtyV || 0;
-        document.getElementById('qtyM').value = r.qtyM || 0;
-        document.getElementById('qtyU').value = r.qtyU || 0;
-        document.getElementById('totalBill').value = r.totalBill || 0;
-        document.getElementById('payment').value = r.pay || 0;
-        window.scrollTo(0,0);
+        document.getElementById('phone').value = r.phone||'';
+        document.getElementById('qtyV').value = r.qtyV||0;
+        document.getElementById('qtyM').value = r.qtyM||0;
+        document.getElementById('qtyU').value = r.qtyU||0;
+        autoBill(); window.scrollTo(0,0);
     }
 
-    async function deleteEntry(id) { if(confirm("Delete bill?")) await db.collection("records").doc(id).delete(); }
-    function clearInputs() { ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = ''); }
+    async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
+    function changePage(v) { curPage += v; if(curPage < 1) curPage = 1; render(); }
     function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("vandaTable")), "Shop_Data.xlsx"); }
 
+    db.collection("settings").doc("main").onSnapshot(d => {
+        if(d.exists()) {
+            settings = d.data();
+            document.getElementById('stVanda').value = settings.V?.st||0; document.getElementById('rtVanda').value = settings.V?.rt||0;
+            document.getElementById('stMineral').value = settings.M?.st||0; document.getElementById('rtMineral').value = settings.M?.rt||0;
+            document.getElementById('stUMB').value = settings.U?.st||0; document.getElementById('rtUMB').value = settings.U?.rt||0;
+        }
+        render();
+    });
+
+    db.collection("records").orderBy("date","desc").onSnapshot(s => {
+        records = s.docs.map(d => ({id:d.id, ...d.data()}));
+        document.getElementById('loader').style.display='none';
+        document.getElementById('mainUI').style.display='block';
+        render();
+    });
+
     document.getElementById('date').valueAsDate = new Date();
-    init();
 </script>
 </body>
 </html>
