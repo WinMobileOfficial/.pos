@@ -215,7 +215,6 @@
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
     function autoBill() {
-        // Direct input values check for live calculation
         const rV = parseInt(document.getElementById('rtV').value) || 0;
         const rM = parseInt(document.getElementById('rtM').value) || 0;
         const rU = parseInt(document.getElementById('rtU').value) || 0;
@@ -332,9 +331,16 @@
 
     function downloadExcel() {
         const exportData = records.map(r => ({
-            "Order Date": r.date, "Customer": r.name, "Contact": r.phone, "Address": r.address, 
-            "Vanda (Bags)": r.qtyV, "Mineral (Bags)": r.qtyM, "UMB (Bags)": r.qtyU, 
-            "Total Bill": r.total, "Received Amount": r.pay, "Balance": (r.total - r.pay)
+            "Order Date": r.date, 
+            "Customer": r.name, 
+            "Contact": r.phone, 
+            "Address": r.address, 
+            "Vanda (Bags)": r.qtyV, 
+            "Mineral": r.qtyM, 
+            "UMB": r.qtyU, 
+            "Total Bill": r.total, 
+            "Received Amount": r.pay, 
+            "Balance": (r.total - r.pay)
         }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
@@ -342,12 +348,14 @@
         XLSX.writeFile(wb, "SystemGovt_Full_Backup.xlsx");
     }
 
+    // Refresh aur Live update ke liye updated function
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st;
-            document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st;
-            document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st;
+            // Input fields mein values set karna taake refresh par gayab na hon
+            if(settings.V) { document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st; }
+            if(settings.M) { document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st; }
+            if(settings.U) { document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st; }
             render();
             autoBill();
         }
@@ -362,5 +370,4 @@
     document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
 </script>
 </body>
-        </html>
-        
+</html>
