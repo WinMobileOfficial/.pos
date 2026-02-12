@@ -6,14 +6,18 @@
     <title>SYSTEM GOVT | Vanda Pro</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; --success: #1e8e3e; --danger: #d93025; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f1f3f4; padding: 10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        
+        /* Inventory Section */
         .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; }
+        .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; position: relative; }
         .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; font-weight: bold; padding: 4px; color: #333; }
+        .btn-lock { background: #000; color: #fff; border: none; font-size: 10px; padding: 2px 5px; border-radius: 4px; cursor: pointer; margin-top: 5px; width: 100%; }
+
+        /* Form Section */
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 14px; }
         label { font-size: 11px; font-weight: bold; color: #555; display: block; margin-bottom: 2px; }
@@ -21,11 +25,11 @@
         .btn-save { background: var(--success); color: white; flex: 2; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-reset { background: var(--danger); color: white; flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        /* Table Layout for Wide Names */
+        /* Table Layout */
         table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; min-width: 900px; table-layout: fixed; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; word-wrap: break-word; }
         .col-date { width: 110px; }
-        .col-info { width: 220px; } /* Wide for full name */
+        .col-info { width: 220px; }
         .col-items { width: 180px; }
         .col-bill { width: 100px; }
         .col-pay { width: 100px; }
@@ -33,13 +37,17 @@
 
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; margin: 2px; display: inline-block; font-weight: bold; }
         
+        /* Auto Page Break Logic */
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
+            body { background: white; padding: 0; }
+            table { min-width: 100% !important; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
             .p-boxes { display: flex !important; justify-content: space-around; margin: 20px 0; gap: 10px; }
-            .p-box { border: 2px solid #000; padding: 10px; width: 30%; text-align: center; border-radius: 10px; font-size: 14px; }
-            .p-box h4 { margin: 0 0 5px 0; font-size: 16px; border-bottom: 1px solid #000; }
-            table { min-width: 100% !important; table-layout: auto; }
+            .p-box { border: 2px solid #000; padding: 10px; width: 30%; text-align: center; border-radius: 10px; }
         }
         .print-only { display: none; }
     </style>
@@ -47,18 +55,30 @@
 <body>
 
 <div id="mainUI">
-    <h2 class="no-print" style="text-align:center; color:var(--vanda); margin-top:0;">🏛️ SYSTEM GOVT</h2>
+    <h2 class="no-print" style="text-align:center; color:var(--vanda); margin:0 0 10px 0;">🏛️ SYSTEM GOVT</h2>
     
     <div class="card no-print">
         <div class="inventory-grid">
-            <div class="inv-box" style="background:var(--vanda)">Vanda Stock<br><input type="number" id="stV" onchange="upSet()">Rate<input type="number" id="rtV" onchange="upSet()"><div id="remV">Remaining: 0</div></div>
-            <div class="inv-box" style="background:var(--mineral)">Mineral Stock<br><input type="number" id="stM" onchange="upSet()">Rate<input type="number" id="rtM" onchange="upSet()"><div id="remM">Remaining: 0</div></div>
-            <div class="inv-box" style="background:var(--umb)">UMB Stock<br><input type="number" id="stU" onchange="upSet()">Rate<input type="number" id="rtU" onchange="upSet()"><div id="remU">Remaining: 0</div></div>
+            <div class="inv-box" style="background:var(--vanda)">
+                Vanda Stock<br><input type="number" id="stV">Rate<input type="number" id="rtV">
+                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
+                <div id="remV">Remaining: 0</div>
+            </div>
+            <div class="inv-box" style="background:var(--mineral)">
+                Mineral Stock<br><input type="number" id="stM">Rate<input type="number" id="rtM">
+                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
+                <div id="remM">Remaining: 0</div>
+            </div>
+            <div class="inv-box" style="background:var(--umb)">
+                UMB Stock<br><input type="number" id="stU">Rate<input type="number" id="rtU">
+                <button class="btn-lock" onclick="upSet()">💾 Lock & Save</button>
+                <div id="remU">Remaining: 0</div>
+            </div>
         </div>
     </div>
 
     <div class="card no-print">
-        <div class="form-grid" id="billForm">
+        <div class="form-grid">
             <input type="hidden" id="editId">
             <div><label>Date</label><input type="date" id="date"></div>
             <div><label>Customer Name</label><input type="text" id="name" placeholder="Full Name"></div>
@@ -67,11 +87,11 @@
             <div><label>Vanda Bags</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="0"></div>
             <div><label>Mineral Bags</label><input type="number" id="qtyM" oninput="autoBill()" placeholder="0"></div>
             <div><label>UMB Bags</label><input type="number" id="qtyU" oninput="autoBill()" placeholder="0"></div>
-            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f8f9fa; border:2px solid #1a73e8; color:blue; font-weight:bold;"></div>
+            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f8f9fa; border:2px solid blue; font-weight:bold;"></div>
             <div style="grid-column: span 2;"><label>Paid Amount</label><input type="number" id="payment" placeholder="Amount Paid"></div>
         </div>
         <div class="btn-group">
-            <button class="btn-save" onclick="save()">💾 Save Combined Record</button>
+            <button class="btn-save" onclick="save()">💾 Save Record</button>
             <button class="btn-reset" onclick="resetForm()">🔄 Reset Form</button>
         </div>
         <div style="display:flex; gap:8px; margin-top:15px;">
@@ -86,8 +106,8 @@
                 <tr>
                     <th class="col-date">Date</th>
                     <th class="col-info">Customer Info</th>
-                    <th class="col-items">Items</th>
-                    <th class="col-bill">Bill</th>
+                    <th class="col-items">Items Sold</th>
+                    <th class="col-bill">Total Bill</th>
                     <th class="col-pay">Paid</th>
                     <th class="col-act no-print">Action</th>
                 </tr>
@@ -98,8 +118,8 @@
     </div>
 
     <div class="print-only">
-        <h1 style="text-align:center; margin-bottom:5px;">SYSTEM GOVT</h1>
-        <h3 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-top:0;">VANDA MANAGEMENT - SALES SUMMARY</h3>
+        <h1 style="text-align:center; margin:0;">SYSTEM GOVT</h1>
+        <h3 style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-top:5px;">VANDA MANAGEMENT - SALES SUMMARY</h3>
         <div class="p-boxes" id="pBoxes"></div>
     </div>
 </div>
@@ -118,6 +138,7 @@
 
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
+    // Function to update total bill automatically
     function autoBill() {
         const qV = parseFloat(document.getElementById('qtyV').value) || 0;
         const qM = parseFloat(document.getElementById('qtyM').value) || 0;
@@ -126,6 +147,7 @@
         document.getElementById('totalBill').value = Math.round(bill);
     }
 
+    // Manual Save for Settings (Fix for 0 balance)
     async function upSet() {
         const s = {
             V: {st: parseInt(document.getElementById('stV').value)||0, rt: parseInt(document.getElementById('rtV').value)||0},
@@ -133,8 +155,7 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        settings = s;
-        render();
+        alert("Stock & Rates Locked in Cloud! 🔒");
     }
 
     function resetForm() {
@@ -149,10 +170,13 @@
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
             cnic: document.getElementById('cnic').value,
-            qtyV: parseInt(document.getElementById('qtyV').value)||0, qtyM: parseInt(document.getElementById('qtyM').value)||0, qtyU: parseInt(document.getElementById('qtyU').value)||0,
-            total: parseInt(document.getElementById('totalBill').value)||0, pay: parseInt(document.getElementById('payment').value)||0
+            qtyV: parseInt(document.getElementById('qtyV').value)||0,
+            qtyM: parseInt(document.getElementById('qtyM').value)||0,
+            qtyU: parseInt(document.getElementById('qtyU').value)||0,
+            total: parseInt(document.getElementById('totalBill').value)||0,
+            pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name) return alert("Pehle Name likhen!");
+        if(!data.name) return alert("Enter Customer Name!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
@@ -182,7 +206,7 @@
         filtered.forEach(r => {
             gB += (r.total||0); gP += (r.pay||0);
             h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
-            <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V:${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M:${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U:${r.qtyU}</span>`:''}</td>
+            <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}</td>
             <td>Rs. ${r.total}</td><td style="color:green; font-weight:bold;">Rs. ${r.pay}</td>
             <td class="no-print"><button onclick="edit('${r.id}')">✏️</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
         });
@@ -215,8 +239,9 @@
         autoBill(); window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Delete Record?")) await db.collection("records").doc(id).delete(); }
 
+    // Listen for Settings
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
@@ -227,6 +252,7 @@
         }
     });
 
+    // Listen for Records
     db.collection("records").orderBy("date","desc").onSnapshot(s => {
         records = s.docs.map(d => ({id:d.id, ...d.data()}));
         render();
