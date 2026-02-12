@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM GOVT | Vanda Management</title>
+    <title>SYSTEM GOVT | Vanda Pro</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -20,8 +20,17 @@
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         .btn-save { background: var(--success); color: white; flex: 2; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-reset { background: var(--danger); color: white; flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; min-width: 800px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; }
+        
+        /* Table Layout for Wide Names */
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; min-width: 900px; table-layout: fixed; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; word-wrap: break-word; }
+        .col-date { width: 110px; }
+        .col-info { width: 220px; } /* Wide for full name */
+        .col-items { width: 180px; }
+        .col-bill { width: 100px; }
+        .col-pay { width: 100px; }
+        .col-act { width: 90px; }
+
         .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; margin: 2px; display: inline-block; font-weight: bold; }
         
         @media print {
@@ -30,6 +39,7 @@
             .p-boxes { display: flex !important; justify-content: space-around; margin: 20px 0; gap: 10px; }
             .p-box { border: 2px solid #000; padding: 10px; width: 30%; text-align: center; border-radius: 10px; font-size: 14px; }
             .p-box h4 { margin: 0 0 5px 0; font-size: 16px; border-bottom: 1px solid #000; }
+            table { min-width: 100% !important; table-layout: auto; }
         }
         .print-only { display: none; }
     </style>
@@ -51,7 +61,7 @@
         <div class="form-grid" id="billForm">
             <input type="hidden" id="editId">
             <div><label>Date</label><input type="date" id="date"></div>
-            <div><label>Customer Name</label><input type="text" id="name" placeholder="Name"></div>
+            <div><label>Customer Name</label><input type="text" id="name" placeholder="Full Name"></div>
             <div><label>Phone</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
             <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
             <div><label>Vanda Bags</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="0"></div>
@@ -65,7 +75,7 @@
             <button class="btn-reset" onclick="resetForm()">🔄 Reset Form</button>
         </div>
         <div style="display:flex; gap:8px; margin-top:15px;">
-            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search Name/Phone/CNIC..." style="flex:2">
+            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search Name/Phone..." style="flex:2">
             <button onclick="window.print()" style="background:#1a73e8; color:white; border:none; padding:0 20px; border-radius:8px; cursor:pointer;">Print Report</button>
         </div>
     </div>
@@ -74,16 +84,16 @@
         <table id="mainTable">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Customer Info</th>
-                    <th>Items</th>
-                    <th>Bill</th>
-                    <th>Paid</th>
-                    <th class="no-print">Action</th>
+                    <th class="col-date">Date</th>
+                    <th class="col-info">Customer Info</th>
+                    <th class="col-items">Items</th>
+                    <th class="col-bill">Bill</th>
+                    <th class="col-pay">Paid</th>
+                    <th class="col-act no-print">Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot" style="background:#f1f3f4; font-weight:bold;"></tfoot>
+            <tfoot id="tableFoot" style="background:#f1f3f4; font-weight:bold; border-top:2px solid #333;"></tfoot>
         </table>
     </div>
 
@@ -124,7 +134,7 @@
         };
         await db.collection("settings").doc("main").set(s);
         settings = s;
-        autoBill();
+        render();
     }
 
     function resetForm() {
@@ -174,11 +184,22 @@
             h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
             <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V:${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M:${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U:${r.qtyU}</span>`:''}</td>
             <td>Rs. ${r.total}</td><td style="color:green; font-weight:bold;">Rs. ${r.pay}</td>
-            <td class="no-print"><button onclick="edit('${r.id}')">Edit</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
+            <td class="no-print"><button onclick="edit('${r.id}')">✏️</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
         });
 
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">GRAND TOTAL:</td><td>Rs. ${gB}</td><td style="color:green">Rs. ${gP}</td><td></td></tr>`;
+        document.getElementById('tableFoot').innerHTML = `
+            <tr>
+                <td colspan="2" style="text-align:right">TOTAL BAGS & GRAND TOTAL:</td>
+                <td>
+                    <span class="badge" style="background:var(--vanda)">V: ${uV}</span><br>
+                    <span class="badge" style="background:var(--mineral)">M: ${uM}</span><br>
+                    <span class="badge" style="background:var(--umb)">U: ${uU}</span>
+                </td>
+                <td>Rs. ${gB}</td>
+                <td style="color:green">Rs. ${gP}</td>
+                <td class="no-print"></td>
+            </tr>`;
     }
 
     function edit(id) {
