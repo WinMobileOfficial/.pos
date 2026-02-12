@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanda System | Full Version Fixed</title>
+    <title>Vanda System | Pro Final</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; --success: #1e8e3e; }
+        :root { --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; --success: #1e8e3e; --danger: #d93025; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f1f3f4; padding: 10px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .inv-box { padding: 10px; border-radius: 8px; color: white; text-align: center; font-size: 11px; }
         .inv-box input { width: 90%; border: none; border-radius: 4px; margin-top: 4px; text-align: center; font-weight: bold; padding: 4px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-        input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; width: 100%; box-sizing: border-box; }
-        .btn-add { background: var(--success); color: white; width: 100%; margin-top: 10px; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; min-width: 800px; }
-        th, td { padding: 10px; border: 1px solid #eee; text-align: left; font-size: 13px; }
-        .badge { padding: 4px 6px; border-radius: 4px; color: white; font-size: 10px; margin: 1px; display: inline-block; }
-        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        input { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 14px; }
+        label { font-size: 11px; font-weight: bold; color: #555; display: block; margin-bottom: 2px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-save { background: var(--success); color: white; flex: 2; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-reset { background: var(--danger); color: white; flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; min-width: 800px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: white; font-size: 11px; margin: 2px; display: inline-block; font-weight: bold; }
         
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .p-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
             .p-boxes { display: flex !important; justify-content: space-around; margin: 20px 0; }
-            .p-box { border: 2px solid #000; padding: 10px; width: 30%; text-align: center; border-radius: 8px; font-weight: bold; }
+            .p-box { border: 2px solid #000; padding: 15px; width: 30%; text-align: center; border-radius: 10px; }
         }
         .print-only { display: none; }
     </style>
@@ -37,30 +38,32 @@
 <div id="mainUI">
     <div class="card no-print">
         <div class="inventory-grid">
-            <div class="inv-box" style="background:var(--vanda)">Vanda<br><input type="number" id="stV" onchange="upSet()">Rate<input type="number" id="rtV" onchange="upSet()"><div id="remV" style="font-size:12px; font-weight:bold; margin-top:5px;">Remaining: 0</div></div>
-            <div class="inv-box" style="background:var(--mineral)">Mineral<br><input type="number" id="stM" onchange="upSet()">Rate<input type="number" id="rtM" onchange="upSet()"><div id="remM" style="font-size:12px; font-weight:bold; margin-top:5px;">Remaining: 0</div></div>
-            <div class="inv-box" style="background:var(--umb)">UMB Block<br><input type="number" id="stU" onchange="upSet()">Rate<input type="number" id="rtU" onchange="upSet()"><div id="remU" style="font-size:12px; font-weight:bold; margin-top:5px;">Remaining: 0</div></div>
+            <div class="inv-box" style="background:var(--vanda)">Vanda Stock<br><input type="number" id="stV" oninput="upSet()">Rate<input type="number" id="rtV" oninput="upSet()"><div id="remV">Remaining: 0</div></div>
+            <div class="inv-box" style="background:var(--mineral)">Mineral Stock<br><input type="number" id="stM" oninput="upSet()">Rate<input type="number" id="rtM" oninput="upSet()"><div id="remM">Remaining: 0</div></div>
+            <div class="inv-box" style="background:var(--umb)">UMB Stock<br><input type="number" id="stU" oninput="upSet()">Rate<input type="number" id="rtU" oninput="upSet()"><div id="remU">Remaining: 0</div></div>
         </div>
     </div>
 
     <div class="card no-print">
-        <div class="form-grid">
+        <div class="form-grid" id="billForm">
             <input type="hidden" id="editId">
             <div><label>Date</label><input type="date" id="date"></div>
-            <div><label>Name</label><input type="text" id="name" placeholder="Customer Name"></div>
+            <div><label>Customer Name</label><input type="text" id="name" placeholder="Name"></div>
             <div><label>Phone</label><input type="text" id="phone" placeholder="03xx-xxxxxxx"></div>
             <div><label>CNIC</label><input type="text" id="cnic" placeholder="CNIC Number"></div>
-            <div><label>Vanda</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="Qty"></div>
-            <div><label>Mineral</label><input type="number" id="qtyM" oninput="autoBill()" placeholder="Qty"></div>
-            <div><label>UMB</label><input type="number" id="qtyU" oninput="autoBill()" placeholder="Qty"></div>
-            <div><label>Bill</label><input type="number" id="totalBill" readonly style="background:#f0f0f0; font-weight:bold; color:blue;"></div>
-            <div><label>Paid</label><input type="number" id="payment" placeholder="Paid Amount"></div>
+            <div><label>Vanda Bags</label><input type="number" id="qtyV" oninput="autoBill()" placeholder="0"></div>
+            <div><label>Mineral Bags</label><input type="number" id="qtyM" oninput="autoBill()" placeholder="0"></div>
+            <div><label>UMB Bags</label><input type="number" id="qtyU" oninput="autoBill()" placeholder="0"></div>
+            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#f8f9fa; border:2px solid #1a73e8; color:blue; font-weight:bold;"></div>
+            <div style="grid-column: span 2;"><label>Paid Amount</label><input type="number" id="payment" placeholder="Amount Paid"></div>
         </div>
-        <button class="btn-add" onclick="save()">💾 Save Combined Record</button>
-        <div style="display:flex; gap:5px; margin-top:10px;">
-            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search Name/Phone..." style="flex:2">
-            <button onclick="exportExcel()" style="background:#e6f4ea; color:green; border-radius:8px; border:1px solid green; padding:0 10px;">Excel</button>
-            <button onclick="window.print()" style="background:#1a73e8; color:white; border-radius:8px; border:none; padding:0 10px;">Print</button>
+        <div class="btn-group">
+            <button class="btn-save" onclick="save()">💾 Save Combined Record</button>
+            <button class="btn-reset" onclick="resetForm()">🔄 Reset Form</button>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:15px;">
+            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search Name/Phone/CNIC..." style="flex:2">
+            <button onclick="window.print()" style="background:#1a73e8; color:white; border:none; padding:0 20px; border-radius:8px; cursor:pointer;">Print Report</button>
         </div>
     </div>
 
@@ -69,28 +72,21 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Customer Details</th>
+                    <th>Customer Info</th>
                     <th>Items</th>
-                    <th>Total Bags</th>
-                    <th>Grand Total</th>
+                    <th>Bill</th>
                     <th>Paid</th>
                     <th class="no-print">Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot" style="background:#eee; font-weight:bold;"></tfoot>
+            <tfoot id="tableFoot" style="background:#f1f3f4; font-weight:bold;"></tfoot>
         </table>
     </div>
 
-    <div class="pagination no-print">
-        <button onclick="changePage(-1)">⬅️ Prev</button>
-        <span id="pageInfo">Page 1</span>
-        <button onclick="changePage(1)">Next ➡️</button>
-    </div>
-
     <div class="print-only">
-        <div class="p-header"><h2>GOVT VANDA MANAGEMENT SYSTEM</h2></div>
-        <div class="p-boxes" id="printBoxes"></div>
+        <h2 style="text-align:center; border-bottom:2px solid #000;">VANDA MANAGEMENT SYSTEM - SUMMARY</h2>
+        <div class="p-boxes" id="pBoxes"></div>
     </div>
 </div>
 
@@ -106,23 +102,35 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let records = [], settings = {}, curPage = 1, rows = 10;
+    let records = [], settings = {};
 
     function autoBill() {
         const qV = parseFloat(document.getElementById('qtyV').value) || 0;
         const qM = parseFloat(document.getElementById('qtyM').value) || 0;
         const qU = parseFloat(document.getElementById('qtyU').value) || 0;
-        const bill = (qV * (settings.V?.rt || 0)) + (qM * (settings.M?.rt || 0)) + (qU * (settings.U?.rt || 0));
-        document.getElementById('totalBill').value = Math.round(bill);
+        
+        const rV = parseFloat(settings.V?.rt) || 0;
+        const rM = parseFloat(settings.M?.rt) || 0;
+        const rU = parseFloat(settings.U?.rt) || 0;
+
+        document.getElementById('totalBill').value = Math.round((qV*rV) + (qM*rM) + (qU*rU));
     }
 
     async function upSet() {
-        const s = {
+        settings = {
             V: {st: parseInt(document.getElementById('stV').value)||0, rt: parseInt(document.getElementById('rtV').value)||0},
             M: {st: parseInt(document.getElementById('stM').value)||0, rt: parseInt(document.getElementById('rtM').value)||0},
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
-        await db.collection("settings").doc("main").set(s);
+        await db.collection("settings").doc("main").set(settings);
+        autoBill();
+    }
+
+    function resetForm() {
+        ['editId','name','phone','cnic','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('date').valueAsDate = new Date();
     }
 
     async function save() {
@@ -138,49 +146,42 @@
             total: parseInt(document.getElementById('totalBill').value)||0,
             pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name) return alert("Pehle Name enter karen!");
+        if(!data.name) return alert("Pehle Name likhen!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
-        location.reload();
+        resetForm();
     }
 
     function render() {
         const term = document.getElementById('search').value.toLowerCase();
-        const filtered = records.filter(r => (r.name||"").toLowerCase().includes(term) || (r.phone||"").includes(term));
+        const filtered = records.filter(r => 
+            (r.name||"").toLowerCase().includes(term) || 
+            (r.phone||"").includes(term) || 
+            (r.cnic||"").includes(term)
+        );
         
-        let usedV=0, usedM=0, usedU=0, gBill=0, gPay=0, gBags=0;
-        records.forEach(r => { 
-            usedV += (r.qtyV||0); usedM += (r.qtyM||0); usedU += (r.qtyU||0); 
-        });
+        let usedV=0, usedM=0, usedU=0, gBill=0, gPay=0;
+        records.forEach(r => { usedV+=(r.qtyV||0); usedM+=(r.qtyM||0); usedU+=(r.qtyU||0); });
 
-        // 🟢 Minus Fix: Agar used stock zyada ho jaye toh Remaining 0 dikhaye
         document.getElementById('remV').innerText = "Remaining: " + Math.max(0, (settings.V?.st||0) - usedV);
         document.getElementById('remM').innerText = "Remaining: " + Math.max(0, (settings.M?.st||0) - usedM);
         document.getElementById('remU').innerText = "Remaining: " + Math.max(0, (settings.U?.st||0) - usedU);
 
-        const start = (curPage-1)*rows, paginated = filtered.slice(start, start+rows);
         let h = '';
-        
         filtered.forEach(r => {
             gBill += (r.total||0); gPay += (r.pay||0);
-            gBags += ((r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0));
-        });
-
-        paginated.forEach(r => {
             h += `<tr><td>${r.date}</td><td><strong>${r.name}</strong><br><small>${r.phone||''}</small></td>
             <td>${r.qtyV?`<span class="badge" style="background:var(--vanda)">V:${r.qtyV}</span>`:''} ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M:${r.qtyM}</span>`:''} ${r.qtyU?`<span class="badge" style="background:var(--umb)">U:${r.qtyU}</span>`:''}</td>
-            <td>${(r.qtyV||0)+(r.qtyM||0)+(r.qtyU||0)}</td><td>${r.total}</td><td style="color:green; font-weight:bold">${r.pay}</td>
+            <td>Rs. ${r.total}</td><td style="color:green; font-weight:bold;">Rs. ${r.pay}</td>
             <td class="no-print"><button onclick="edit('${r.id}')">Edit</button> <button onclick="del('${r.id}')" style="color:red">X</button></td></tr>`;
         });
 
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">GRAND TOTAL:</td><td>${gBags} Bags</td><td>Rs. ${gBill}</td><td style="color:green">Rs. ${gPay}</td><td></td></tr>`;
-        document.getElementById('pageInfo').innerText = `Page ${curPage} of ${Math.ceil(filtered.length/rows) || 1}`;
-
-        // Print Boxes Display
-        document.getElementById('printBoxes').innerHTML = `
-            <div class="p-box">VANDA<br>Stock: ${settings.V?.st}<br>Rate: ${settings.V?.rt}</div>
-            <div class="p-box">MINERAL<br>Stock: ${settings.M?.st}<br>Rate: ${settings.M?.rt}</div>
-            <div class="p-box">UMB BLOCK<br>Stock: ${settings.U?.st}<br>Rate: ${settings.U?.rt}</div>
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">GRAND TOTAL:</td><td>Rs. ${gBill}</td><td style="color:green">Rs. ${gPay}</td><td></td></tr>`;
+        
+        document.getElementById('pBoxes').innerHTML = `
+            <div class="p-box"><h4>VANDA</h4>Used: ${usedV} / Total: ${settings.V?.st||0}</div>
+            <div class="p-box"><h4>MINERAL</h4>Used: ${usedM} / Total: ${settings.M?.st||0}</div>
+            <div class="p-box"><h4>UMB</h4>Used: ${usedU} / Total: ${settings.U?.st||0}</div>
         `;
     }
 
@@ -190,16 +191,14 @@
         document.getElementById('date').value = r.date;
         document.getElementById('name').value = r.name;
         document.getElementById('phone').value = r.phone;
-        document.getElementById('cnic').value = r.cnic||'';
+        document.getElementById('cnic').value = r.cnic;
         document.getElementById('qtyV').value = r.qtyV;
         document.getElementById('qtyM').value = r.qtyM;
         document.getElementById('qtyU').value = r.qtyU;
-        autoBill();
+        autoBill(); window.scrollTo(0,0);
     }
 
-    async function del(id) { if(confirm("Delete bill?")) await db.collection("records").doc(id).delete(); }
-    function changePage(v) { curPage += v; if(curPage < 1) curPage = 1; render(); }
-    function exportExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("mainTable")), "Shop_Report.xlsx"); }
+    async function del(id) { if(confirm("Delete record?")) await db.collection("records").doc(id).delete(); }
 
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
@@ -207,8 +206,8 @@
             document.getElementById('stV').value = settings.V.st; document.getElementById('rtV').value = settings.V.rt;
             document.getElementById('stM').value = settings.M.st; document.getElementById('rtM').value = settings.M.rt;
             document.getElementById('stU').value = settings.U.st; document.getElementById('rtU').value = settings.U.rt;
+            render();
         }
-        render();
     });
 
     db.collection("records").orderBy("date","desc").onSnapshot(s => {
