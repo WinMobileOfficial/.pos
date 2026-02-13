@@ -17,13 +17,11 @@
          
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #eef2f7; color: var(--dark); line-height: 1.6; }
         
-        /* Sidebar/Header */
         .header { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .header h2 { margin: 0; font-weight: 700; color: var(--primary); font-size: 22px; display: flex; align-items: center; gap: 10px; }
         
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
 
-        /* Dashboard Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
         .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
@@ -31,8 +29,10 @@
         .stat-card .val { font-size: 24px; font-weight: 800; margin: 10px 0; }
         .stat-card input { width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
         .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 12px; }
+        
+        /* Highlight for Sold Stock */
+        .sold-label { background: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; margin-top: 5px; display: inline-block; }
 
-        /* Forms */
         .glass-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .form-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; }
         
@@ -48,27 +48,22 @@
         .btn-reset { background: #f1f3f4; color: #5f6368; flex: 1; justify-content: center; }
         .btn:hover { opacity: 0.9; }
 
-        /* Table Design */
         .table-responsive { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
         thead { background: #f8f9fa; }
         th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; }
         td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
-        tr:hover { background-color: #fcfdfe; }
         
-        .badge { padding: 5px 10px; border-radius: 6px; color: white; font-size: 11px; font-weight: 700; margin-right: 5px; }
-        
-        /* Print Header - Professional Letterhead */
         .print-header { display: none; text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
-        .print-header h1 { margin: 0; color: #000; font-size: 32px; letter-spacing: 2px; }
+        .stock-summary-box { display: none; margin-top: 20px; border: 2px solid #000; padding: 15px; border-radius: 8px; }
 
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
+            .stock-summary-box { display: block !important; }
             body { background: white; padding: 0; }
-            .container { max-width: 100%; width: 100%; margin: 0; }
-            table { border: 1px solid #000; font-size: 11px; }
-            th, td { border: 1px solid #ccc; padding: 8px; }
+            table { border: 1px solid #000; font-size: 12px; }
+            th, td { border: 1px solid #000; padding: 8px; }
             @page { size: landscape; margin: 1cm; }
         }
     </style>
@@ -78,131 +73,91 @@
 <div class="header no-print">
     <h2><i class="fas fa-landmark"></i> SYSTEM GOVT <span style="font-weight:300; font-size:16px; color:#888;">| Vanda ERP</span></h2>
     <div style="display:flex; gap:10px;">
-        <button class="btn btn-primary" onclick="downloadExcel()" style="padding:8px 15px; font-size:12px; background:#1e8e3e;">
-            <i class="fas fa-file-excel"></i> Export Backup
-        </button>
-        <button class="btn btn-primary" onclick="window.print()" style="padding:8px 15px; font-size:12px;">
-            <i class="fas fa-print"></i> Print Report
-        </button>
+        <button class="btn btn-primary" onclick="downloadExcel()" style="padding:8px 15px; font-size:12px; background:#1e8e3e;"><i class="fas fa-file-excel"></i> Export Excel</button>
+        <button class="btn btn-primary" onclick="window.print()" style="padding:8px 15px; font-size:12px;"><i class="fas fa-print"></i> Print Report</button>
     </div>
 </div>
 
 <div class="container">
     <div class="stats-grid no-print">
         <div class="stat-card" style="border-color: var(--vanda);">
-            <h4>Vanda Stock</h4>
+            <h4>Vanda Remaining Stock</h4>
             <div class="val" id="dispV">0</div>
-            <div class="footer">
-                <span>Set Rate: <input type="number" id="rtV" placeholder="Rs" oninput="autoBill()"></span>
-                <span>Limit: <input type="number" id="stV" placeholder="Stock"></span>
+            <div class="sold-label">Total Sold: <span id="soldV">0</span></div>
+            <div class="footer" style="margin-top:10px;">
+                <span>Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
+                <span>Limit: <input type="number" id="stV"></span>
             </div>
-            <button type="button" onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
         </div>
+
         <div class="stat-card" style="border-color: var(--mineral);">
-            <h4>Mineral Stock</h4>
+            <h4>Mineral Remaining Stock</h4>
             <div class="val" id="dispM">0</div>
-            <div class="footer">
-                <span>Set Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
+            <div class="sold-label">Total Sold: <span id="soldM">0</span></div>
+            <div class="footer" style="margin-top:10px;">
+                <span>Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stM"></span>
             </div>
-            <button type="button" onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
         </div>
+
         <div class="stat-card" style="border-color: var(--umb);">
-            <h4>UMB Stock</h4>
+            <h4>UMB Remaining Stock</h4>
             <div class="val" id="dispU">0</div>
-            <div class="footer">
-                <span>Set Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
+            <div class="sold-label">Total Sold: <span id="soldU">0</span></div>
+            <div class="footer" style="margin-top:10px;">
+                <span>Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stU"></span>
             </div>
-            <button type="button" onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:5px; border-radius:4px; font-size:10px; cursor:pointer;">UPDATE CLOUD STOCK</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
         </div>
     </div>
 
     <div class="glass-card no-print">
-        <div class="form-title"><i class="fas fa-plus-circle"></i> Create New Sales Order</div>
+        <div class="form-title">Create Sales Order</div>
         <input type="hidden" id="editId">
         <div class="grid-4">
-            <div class="field-group">
-                <label><i class="fas fa-calendar"></i> Date</label>
-                <input type="date" id="date">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-user"></i> Customer Name</label>
-                <input type="text" id="name" placeholder="Full Name">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-phone"></i> Phone Number</label>
-                <input type="text" id="phone" placeholder="03xx-xxxxxxx">
-            </div>
-            <div class="field-group">
-                <label><i class="fas fa-id-card"></i> CNIC (Optional)</label>
-                <input type="text" id="cnic" placeholder="xxxxx-xxxxxxx-x">
-            </div>
+            <div class="field-group"><label>Date</label><input type="date" id="date"></div>
+            <div class="field-group"><label>Customer Name</label><input type="text" id="name"></div>
+            <div class="field-group"><label>Phone</label><input type="text" id="phone"></div>
+            <div class="field-group"><label>CNIC</label><input type="text" id="cnic"></div>
         </div>
-        <div class="field-group">
-            <label><i class="fas fa-map-marker-alt"></i> Complete Address</label>
-            <input type="text" id="address" placeholder="Village, Tehsil, District info...">
+        <div class="field-group"><label>Address</label><input type="text" id="address"></div>
+        <div class="grid-4">
+            <div class="field-group"><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()" value="0"></div>
+            <div class="field-group"><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()" value="0"></div>
+            <div class="field-group"><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()" value="0"></div>
+            <div class="field-group"><label>Total Bill</label><input type="number" id="totalBill" readonly></div>
         </div>
-        <div class="grid-4" style="background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <div class="field-group">
-                <label>Vanda Qty</label>
-                <input type="number" id="qtyV" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>Mineral Qty</label>
-                <input type="number" id="qtyM" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>UMB Qty</label>
-                <input type="number" id="qtyU" oninput="autoBill()" placeholder="0">
-            </div>
-            <div class="field-group">
-                <label>Total Receivable</label>
-                <input type="number" id="totalBill" readonly style="background:#e8f0fe; color:var(--primary); font-weight:800; border:2px solid var(--primary);">
-            </div>
-        </div>
-        <div class="field-group">
-            <label><i class="fas fa-money-bill-wave"></i> Payment Received</label>
-            <input type="number" id="payment" placeholder="Amount Customer Paid">
-        </div>
-        
+        <div class="field-group"><label>Payment Received</label><input type="number" id="payment" value="0"></div>
         <div class="action-btns">
             <button class="btn btn-reset" onclick="resetForm()">Reset</button>
-            <button class="btn btn-primary" onclick="save()"><i class="fas fa-save"></i> Save Transaction</button>
+            <button class="btn btn-primary" onclick="save()">Save Transaction</button>
         </div>
     </div>
 
     <div class="glass-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div class="form-title" style="margin:0;"><i class="fas fa-list"></i> Transaction Ledger</div>
-            <div class="no-print">
-                <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search name or phone..." style="padding:10px; border-radius:8px; border:1px solid #ddd; width:250px;">
-            </div>
-        </div>
-
+        <div class="print-only print-header"><h1>SYSTEM GOVT - OFFICIAL LEDGER REPORT</h1></div>
         <div class="table-responsive">
-            <div class="print-only print-header">
-                <h1>SYSTEM GOVT</h1>
-                <p>Vanda & Mineral Stock Management System - Sales Report</p>
-                <small id="printDate"></small>
-            </div>
-
-            <table id="mainTable">
+            <table>
                 <thead>
                     <tr>
-                        <th width="100">Date</th>
-                        <th width="180">Customer Info</th>
-                        <th width="200">Address</th>
-                        <th width="150">Items Sold</th>
-                        <th>Total Bill</th>
-                        <th>Paid</th>
-                        <th>Balance</th>
-                        <th class="no-print" width="100">Action</th>
+                        <th>Date</th><th>Customer</th><th>Items Sold</th><th>Total</th><th>Paid</th><th>Balance</th><th class="no-print">Action</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
-                <tfoot id="tableFoot" style="background:#f8f9fa; font-weight:800; border-top:2px solid #ddd;"></tfoot>
+                <tfoot id="tableFoot" style="font-weight:bold; background:#f8f9fa;"></tfoot>
             </table>
+        </div>
+        
+        <div class="stock-summary-box">
+            <h3 style="margin-top:0;">REMAINING STOCK SUMMARY:</h3>
+            <div style="display:flex; justify-content:space-around;">
+                <p><b>Vanda:</b> <span id="pRemV">0</span> bags</p>
+                <p><b>Mineral:</b> <span id="pRemM">0</span> bags</p>
+                <p><b>UMB:</b> <span id="pRemU">0</span> bags</p>
+            </div>
         </div>
     </div>
 </div>
@@ -215,16 +170,9 @@
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
     function autoBill() {
-        const rV = parseInt(document.getElementById('rtV').value) || 0;
-        const rM = parseInt(document.getElementById('rtM').value) || 0;
-        const rU = parseInt(document.getElementById('rtU').value) || 0;
-        
-        const qV = parseInt(document.getElementById('qtyV').value) || 0;
-        const qM = parseInt(document.getElementById('qtyM').value) || 0;
-        const qU = parseInt(document.getElementById('qtyU').value) || 0;
-        
-        const total = (qV * rV) + (qM * rM) + (qU * rU);
-        document.getElementById('totalBill').value = total;
+        const rV = parseInt(document.getElementById('rtV').value)||0, rM = parseInt(document.getElementById('rtM').value)||0, rU = parseInt(document.getElementById('rtU').value)||0;
+        const qV = parseInt(document.getElementById('qtyV').value)||0, qM = parseInt(document.getElementById('qtyM').value)||0, qU = parseInt(document.getElementById('qtyU').value)||0;
+        document.getElementById('totalBill').value = (qV*rV) + (qM*rM) + (qU*rU);
     }
 
     async function upSet() {
@@ -234,133 +182,83 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Success: Cloud Stock Updated!");
-        // We don't need to manually call autoBill here, onSnapshot will handle it.
+        alert("Stock Settings Updated!");
     }
 
     async function save() {
         const id = document.getElementById('editId').value;
         const data = {
-            date: document.getElementById('date').value,
-            name: document.getElementById('name').value,
-            phone: document.getElementById('phone').value,
-            cnic: document.getElementById('cnic').value,
-            address: document.getElementById('address').value,
-            qtyV: parseInt(document.getElementById('qtyV').value)||0,
-            qtyM: parseInt(document.getElementById('qtyM').value)||0,
-            qtyU: parseInt(document.getElementById('qtyU').value)||0,
-            total: parseInt(document.getElementById('totalBill').value)||0,
-            pay: parseInt(document.getElementById('payment').value)||0
+            date: document.getElementById('date').value, name: document.getElementById('name').value, phone: document.getElementById('phone').value,
+            cnic: document.getElementById('cnic').value, address: document.getElementById('address').value,
+            qtyV: parseInt(document.getElementById('qtyV').value)||0, qtyM: parseInt(document.getElementById('qtyM').value)||0, qtyU: parseInt(document.getElementById('qtyU').value)||0,
+            total: parseInt(document.getElementById('totalBill').value)||0, pay: parseInt(document.getElementById('payment').value)||0
         };
-        if(!data.name || !data.date) return alert("Error: Name and Date are required!");
-        
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
 
     function render() {
-        const term = document.getElementById('search').value.toLowerCase();
-        const filtered = records.filter(r => (r.name||"").toLowerCase().includes(term) || (r.phone||"").includes(term));
-        
-        let uV=0, uM=0, uU=0, gB=0, gP=0;
+        let uV=0, uM=0, uU=0, gT=0, gP=0;
         records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
 
-        // Update Inventory Display
-        document.getElementById('dispV').innerText = (settings.V.st - uV);
-        document.getElementById('dispM').innerText = (settings.M.st - uM);
-        document.getElementById('dispU').innerText = (settings.U.st - uU);
+        // Update Remaining Stock
+        const remV = settings.V.st - uV, remM = settings.M.st - uM, remU = settings.U.st - uU;
+        document.getElementById('dispV').innerText = remV;
+        document.getElementById('dispM').innerText = remM;
+        document.getElementById('dispU').innerText = remU;
+        
+        // Update Total Sold Labels
+        document.getElementById('soldV').innerText = uV;
+        document.getElementById('soldM').innerText = uM;
+        document.getElementById('soldU').innerText = uU;
+
+        // Update Print Section
+        document.getElementById('pRemV').innerText = remV;
+        document.getElementById('pRemM').innerText = remM;
+        document.getElementById('pRemU').innerText = remU;
 
         let h = '';
-        filtered.forEach(r => {
-            const balance = (r.total || 0) - (r.pay || 0);
-            gB += (r.total||0); gP += (r.pay||0);
-            h += `<tr>
-                <td><b>${r.date}</b></td>
-                <td><b>${r.name}</b><br><small style="color:#666">P: ${r.phone || 'N/A'}</small><br><small style="color:#888">CNIC: ${r.cnic || 'N/A'}</small></td>
-                <td><small>${r.address || 'No Address'}</small></td>
-                <td>
-                    ${r.qtyV?`<span class="badge" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
-                    ${r.qtyM?`<span class="badge" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
-                    ${r.qtyU?`<span class="badge" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}
-                </td>
-                <td><b>Rs. ${r.total.toLocaleString()}</b></td>
-                <td style="color:var(--success)"><b>Rs. ${r.pay.toLocaleString()}</b></td>
-                <td style="color:${balance > 0 ? 'var(--danger)' : 'var(--success)'}"><b>Rs. ${balance.toLocaleString()}</b></td>
-                <td class="no-print">
-                    <button onclick="edit('${r.id}')" style="border:none; background:#e8f0fe; color:var(--primary); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-edit"></i></button>
-                    <button onclick="del('${r.id}')" style="border:none; background:#fce8e6; color:var(--danger); padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>`;
+        records.forEach(r => {
+            const bal = r.total - r.pay; gT+=r.total; gP+=r.pay;
+            h += `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>V:${r.qtyV} | M:${r.qtyM} | U:${r.qtyU}</td><td>${r.total}</td><td>${r.pay}</td><td>${bal}</td><td class="no-print"><button onclick="edit('${r.id}')">Edit</button></td></tr>`;
         });
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr>
-            <td colspan="3" style="text-align:right">TOTAL SUMMARY:</td>
-            <td>
-                <span style="color:var(--vanda)">V: ${uV}</span> | 
-                <span style="color:var(--mineral)">M: ${uM}</span> | 
-                <span style="color:var(--umb)">U: ${uU}</span>
-            </td>
-            <td>Rs. ${gB.toLocaleString()}</td>
-            <td style="color:var(--success)">Rs. ${gP.toLocaleString()}</td>
-            <td style="color:var(--danger)">Rs. ${(gB-gP).toLocaleString()}</td>
-            <td class="no-print"></td>
-        </tr>`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3">GRAND TOTAL SUMMARY:</td><td>${gT}</td><td>${gP}</td><td>${gT-gP}</td><td class="no-print"></td></tr>`;
     }
 
     function resetForm() {
-        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
+        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(i => document.getElementById(i).value='');
         document.getElementById('date').valueAsDate = new Date();
-        autoBill();
     }
 
     function edit(id) {
         const r = records.find(x => x.id === id);
+        ['date','name','phone','cnic','address','qtyV','qtyM','qtyU','payment'].forEach(f => document.getElementById(f).value = r[f]);
         document.getElementById('editId').value = r.id;
-        document.getElementById('date').value = r.date;
-        document.getElementById('name').value = r.name;
-        document.getElementById('phone').value = r.phone;
-        document.getElementById('cnic').value = r.cnic || '';
-        document.getElementById('address').value = r.address || '';
-        document.getElementById('qtyV').value = r.qtyV;
-        document.getElementById('qtyM').value = r.qtyM;
-        document.getElementById('qtyU').value = r.qtyU;
-        document.getElementById('payment').value = r.pay;
         autoBill();
-        window.scrollTo(0,0);
     }
-
-    async function del(id) { if(confirm("Confirm: Delete this record permanently?")) await db.collection("records").doc(id).delete(); }
 
     function downloadExcel() {
-        const exportData = records.map(r => ({
-            "Order Date": r.date, 
-            "Customer": r.name, 
-            "Phone": r.phone || "N/A", 
-            "CNIC": r.cnic || "N/A", 
-            "Address": r.address || "N/A", 
-            "Vanda (Bags)": r.qtyV, 
-            "Mineral": r.qtyM, 
-            "UMB": r.qtyU, 
-            "Total Bill": r.total, 
-            "Received Amount": r.pay, 
-            "Balance": (r.total - r.pay)
-        }));
-        const ws = XLSX.utils.json_to_sheet(exportData);
+        let uV=0, uM=0, uU=0;
+        records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
+
+        const data = records.map(r => ({ "Date": r.date, "Customer": r.name, "Vanda": r.qtyV, "Mineral": r.qtyM, "UMB": r.qtyU, "Bill": r.total, "Paid": r.pay, "Balance": (r.total-r.pay) }));
+        
+        // Push Remaining Stock to Excel
+        data.push({});
+        data.push({ "Date": "REMAINING STOCK", "Customer": "Vanda: " + (settings.V.st - uV), "Vanda": "Mineral: " + (settings.M.st - uM), "Mineral": "UMB: " + (settings.U.st - uU) });
+
+        const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "SalesLedger");
-        XLSX.writeFile(wb, "SystemGovt_ERP_Backup.xlsx");
+        XLSX.writeFile(wb, "Sales_Report_Govt.xlsx");
     }
 
-// Fixed Snapshot Listener for persistent data
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            // Fill inputs with Cloud data to prevent disappearance
-            if(settings.V) { document.getElementById('rtV').value = settings.V.rt || 0; document.getElementById('stV').value = settings.V.st || 0; }
-            if(settings.M) { document.getElementById('rtM').value = settings.M.rt || 0; document.getElementById('stM').value = settings.M.st || 0; }
-            if(settings.U) { document.getElementById('rtU').value = settings.U.rt || 0; document.getElementById('stU').value = settings.U.st || 0; }
+            ['rtV','stV','rtM','stM','rtU','stU'].forEach(id => document.getElementById(id).value = settings[id.slice(-1)][id.slice(0,2)]);
             render();
-            autoBill();
         }
     });
 
@@ -368,9 +266,6 @@
         records = s.docs.map(d => ({id:d.id, ...d.data()}));
         render();
     });
-
-    document.getElementById('date').valueAsDate = new Date();
-    document.getElementById('printDate').innerText = "Generated on: " + new Date().toLocaleString();
 </script>
 </body>
 </html>
