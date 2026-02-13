@@ -24,14 +24,11 @@
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: white; padding: 20px; border-radius: 12px; border-left: 5px solid; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
         .stat-card h4 { margin: 0; font-size: 13px; text-transform: uppercase; color: #5f6368; }
-        .stat-card .val { font-size: 24px; font-weight: 800; margin: 10px 0; }
+        .stat-card .val { font-size: 24px; font-weight: 800; margin: 5px 0; color: var(--danger); }
+        .stat-card .sold-stat { font-size: 14px; font-weight: 700; color: var(--success); border-top: 1px solid #eee; padding-top: 5px; margin-top: 5px; }
         .stat-card input { width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; }
-        .stat-card .footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 12px; }
-        
-        /* Highlight for Sold Stock */
-        .sold-label { background: #fce8e6; color: #d93025; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; margin-top: 5px; display: inline-block; }
+        .stat-card .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; }
 
         .glass-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .form-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; }
@@ -39,78 +36,71 @@
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .field-group { margin-bottom: 15px; }
         .field-group label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; margin-bottom: 5px; }
-        .field-group input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; transition: 0.2s; box-sizing: border-box; }
-        .field-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+        .field-group input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; box-sizing: border-box; }
         
         .action-btns { display: flex; gap: 12px; margin-top: 10px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; flex: 2; justify-content: center; }
-        .btn-reset { background: #f1f3f4; color: #5f6368; flex: 1; justify-content: center; }
-        .btn:hover { opacity: 0.9; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-reset { background: #f1f3f4; color: #5f6368; }
 
-        .table-responsive { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        thead { background: #f8f9fa; }
-        th { padding: 15px; font-size: 13px; color: #5f6368; text-align: left; border-bottom: 2px solid #eee; }
-        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; vertical-align: top; }
+        .table-responsive { background: white; border-radius: 12px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f1f3f4; text-align: left; }
         
-        .print-header { display: none; text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
-        .stock-summary-box { display: none; margin-top: 20px; border: 2px solid #000; padding: 15px; border-radius: 8px; }
+        .print-header { display: none; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .stock-summary-print { display: none; margin-top: 20px; border: 2px solid #000; padding: 15px; }
 
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .stock-summary-box { display: block !important; }
-            body { background: white; padding: 0; }
+            .stock-summary-print { display: block !important; }
+            body { background: white; }
             table { border: 1px solid #000; font-size: 12px; }
             th, td { border: 1px solid #000; padding: 8px; }
-            @page { size: landscape; margin: 1cm; }
         }
     </style>
 </head>
 <body>
 
 <div class="header no-print">
-    <h2><i class="fas fa-landmark"></i> SYSTEM GOVT <span style="font-weight:300; font-size:16px; color:#888;">| Vanda ERP</span></h2>
+    <h2><i class="fas fa-landmark"></i> SYSTEM GOVT</h2>
     <div style="display:flex; gap:10px;">
-        <button class="btn btn-primary" onclick="downloadExcel()" style="padding:8px 15px; font-size:12px; background:#1e8e3e;"><i class="fas fa-file-excel"></i> Export Excel</button>
-        <button class="btn btn-primary" onclick="window.print()" style="padding:8px 15px; font-size:12px;"><i class="fas fa-print"></i> Print Report</button>
+        <button class="btn btn-primary" onclick="downloadExcel()" style="background:#1e8e3e;">Export Excel</button>
+        <button class="btn btn-primary" onclick="window.print()">Print Report</button>
     </div>
 </div>
 
 <div class="container">
     <div class="stats-grid no-print">
         <div class="stat-card" style="border-color: var(--vanda);">
-            <h4>Vanda Remaining Stock</h4>
+            <h4>Vanda Remaining</h4>
             <div class="val" id="dispV">0</div>
-            <div class="sold-label">Total Sold: <span id="soldV">0</span></div>
-            <div class="footer" style="margin-top:10px;">
+            <div class="sold-stat">Total Sold: <span id="soldV">0</span></div>
+            <div class="footer">
                 <span>Rate: <input type="number" id="rtV" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stV"></span>
             </div>
-            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--vanda); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; cursor:pointer;">UPDATE STOCK</button>
         </div>
-
         <div class="stat-card" style="border-color: var(--mineral);">
-            <h4>Mineral Remaining Stock</h4>
+            <h4>Mineral Remaining</h4>
             <div class="val" id="dispM">0</div>
-            <div class="sold-label">Total Sold: <span id="soldM">0</span></div>
-            <div class="footer" style="margin-top:10px;">
+            <div class="sold-stat">Total Sold: <span id="soldM">0</span></div>
+            <div class="footer">
                 <span>Rate: <input type="number" id="rtM" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stM"></span>
             </div>
-            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--mineral); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; cursor:pointer;">UPDATE STOCK</button>
         </div>
-
         <div class="stat-card" style="border-color: var(--umb);">
-            <h4>UMB Remaining Stock</h4>
+            <h4>UMB Remaining</h4>
             <div class="val" id="dispU">0</div>
-            <div class="sold-label">Total Sold: <span id="soldU">0</span></div>
-            <div class="footer" style="margin-top:10px;">
+            <div class="sold-stat">Total Sold: <span id="soldU">0</span></div>
+            <div class="footer">
                 <span>Rate: <input type="number" id="rtU" oninput="autoBill()"></span>
                 <span>Limit: <input type="number" id="stU"></span>
             </div>
-            <button onclick="upSet()" style="width:100%; margin-top:10px; background:var(--umb); color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">Update Stock</button>
+            <button onclick="upSet()" style="width:100%; margin-top:10px; cursor:pointer;">UPDATE STOCK</button>
         </div>
     </div>
 
@@ -138,26 +128,25 @@
     </div>
 
     <div class="glass-card">
-        <div class="print-only print-header"><h1>SYSTEM GOVT - OFFICIAL LEDGER REPORT</h1></div>
+        <div class="print-only print-header">
+            <h1>SYSTEM GOVT - OFFICIAL LEDGER</h1>
+            <p id="pDate"></p>
+        </div>
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>Date</th><th>Customer</th><th>Items Sold</th><th>Total</th><th>Paid</th><th>Balance</th><th class="no-print">Action</th>
+                        <th>Date</th><th>Customer</th><th>Vanda</th><th>Mineral</th><th>UMB</th><th>Total</th><th>Paid</th><th class="no-print">Action</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
                 <tfoot id="tableFoot" style="font-weight:bold; background:#f8f9fa;"></tfoot>
             </table>
         </div>
-        
-        <div class="stock-summary-box">
-            <h3 style="margin-top:0;">REMAINING STOCK SUMMARY:</h3>
-            <div style="display:flex; justify-content:space-around;">
-                <p><b>Vanda:</b> <span id="pRemV">0</span> bags</p>
-                <p><b>Mineral:</b> <span id="pRemM">0</span> bags</p>
-                <p><b>UMB:</b> <span id="pRemU">0</span> bags</p>
-            </div>
+
+        <div class="stock-summary-print">
+            <h3>REMAINING STOCK STATUS:</h3>
+            <p>Vanda: <span id="prV">0</span> | Mineral: <span id="prM">0</span> | UMB: <span id="prU">0</span></p>
         </div>
     </div>
 </div>
@@ -170,9 +159,8 @@
     let records = [], settings = { V:{st:0,rt:0}, M:{st:0,rt:0}, U:{st:0,rt:0} };
 
     function autoBill() {
-        const rV = parseInt(document.getElementById('rtV').value)||0, rM = parseInt(document.getElementById('rtM').value)||0, rU = parseInt(document.getElementById('rtU').value)||0;
         const qV = parseInt(document.getElementById('qtyV').value)||0, qM = parseInt(document.getElementById('qtyM').value)||0, qU = parseInt(document.getElementById('qtyU').value)||0;
-        document.getElementById('totalBill').value = (qV*rV) + (qM*rM) + (qU*rU);
+        document.getElementById('totalBill').value = (qV*settings.V.rt) + (qM*settings.M.rt) + (qU*settings.U.rt);
     }
 
     async function upSet() {
@@ -182,7 +170,7 @@
             U: {st: parseInt(document.getElementById('stU').value)||0, rt: parseInt(document.getElementById('rtU').value)||0}
         };
         await db.collection("settings").doc("main").set(s);
-        alert("Stock Settings Updated!");
+        alert("Success: Cloud Stock Updated!");
     }
 
     async function save() {
@@ -198,36 +186,44 @@
     }
 
     function render() {
-        let uV=0, uM=0, uU=0, gT=0, gP=0;
-        records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
+        let tV=0, tM=0, tU=0, gT=0, gP=0;
+        records.forEach(r => { tV+=(r.qtyV||0); tM+=(r.qtyM||0); tU+=(r.qtyU||0); gT+=(r.total||0); gP+=(r.pay||0); });
 
-        // Update Remaining Stock
-        const remV = settings.V.st - uV, remM = settings.M.st - uM, remU = settings.U.st - uU;
-        document.getElementById('dispV').innerText = remV;
-        document.getElementById('dispM').innerText = remM;
-        document.getElementById('dispU').innerText = remU;
+        // Update Dashboard
+        document.getElementById('soldV').innerText = tV; document.getElementById('soldM').innerText = tM; document.getElementById('soldU').innerText = tU;
+        document.getElementById('dispV').innerText = settings.V.st - tV; document.getElementById('dispM').innerText = settings.M.st - tM; document.getElementById('dispU').innerText = settings.U.st - tU;
         
-        // Update Total Sold Labels
-        document.getElementById('soldV').innerText = uV;
-        document.getElementById('soldM').innerText = uM;
-        document.getElementById('soldU').innerText = uU;
-
         // Update Print Section
-        document.getElementById('pRemV').innerText = remV;
-        document.getElementById('pRemM').innerText = remM;
-        document.getElementById('pRemU').innerText = remU;
+        document.getElementById('prV').innerText = settings.V.st - tV; document.getElementById('prM').innerText = settings.M.st - tM; document.getElementById('prU').innerText = settings.U.st - tU;
 
         let h = '';
         records.forEach(r => {
-            const bal = r.total - r.pay; gT+=r.total; gP+=r.pay;
-            h += `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>V:${r.qtyV} | M:${r.qtyM} | U:${r.qtyU}</td><td>${r.total}</td><td>${r.pay}</td><td>${bal}</td><td class="no-print"><button onclick="edit('${r.id}')">Edit</button></td></tr>`;
+            h += `<tr><td>${r.date}</td><td><b>${r.name}</b></td><td>${r.qtyV}</td><td>${r.qtyM}</td><td>${r.qtyU}</td><td>${r.total}</td><td>${r.pay}</td><td class="no-print"><button onclick="edit('${r.id}')">Edit</button></td></tr>`;
         });
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3">GRAND TOTAL SUMMARY:</td><td>${gT}</td><td>${gP}</td><td>${gT-gP}</td><td class="no-print"></td></tr>`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="2">GRAND TOTAL:</td><td>${tV}</td><td>${tM}</td><td>${tU}</td><td>${gT}</td><td>${gP}</td><td></td></tr>`;
+    }
+
+    function downloadExcel() {
+        let tV=0, tM=0, tU=0, gT=0, gP=0;
+        const data = records.map(r => {
+            tV+=r.qtyV; tM+=r.qtyM; tU+=r.qtyU; gT+=r.total; gP+=r.pay;
+            return { "Date": r.date, "Customer": r.name, "Vanda": r.qtyV, "Mineral": r.qtyM, "UMB": r.qtyU, "Bill": r.total, "Paid": r.pay, "Balance": (r.total-r.pay) };
+        });
+        
+        // Add Totals & Stock to Excel
+        data.push({});
+        data.push({ "Date": "TOTAL SOLD", "Customer": "", "Vanda": tV, "Mineral": tM, "UMB": tU, "Bill": gT, "Paid": gP, "Balance": (gT-gP) });
+        data.push({ "Date": "REMAINING STOCK", "Customer": "", "Vanda": (settings.V.st-tV), "Mineral": (settings.M.st-tM), "UMB": (settings.U.st-tU) });
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sales");
+        XLSX.writeFile(wb, "Stock_Report.xlsx");
     }
 
     function resetForm() {
-        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(i => document.getElementById(i).value='');
+        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('date').valueAsDate = new Date();
     }
 
@@ -238,26 +234,12 @@
         autoBill();
     }
 
-    function downloadExcel() {
-        let uV=0, uM=0, uU=0;
-        records.forEach(r => { uV+=(r.qtyV||0); uM+=(r.qtyM||0); uU+=(r.qtyU||0); });
-
-        const data = records.map(r => ({ "Date": r.date, "Customer": r.name, "Vanda": r.qtyV, "Mineral": r.qtyM, "UMB": r.qtyU, "Bill": r.total, "Paid": r.pay, "Balance": (r.total-r.pay) }));
-        
-        // Push Remaining Stock to Excel
-        data.push({});
-        data.push({ "Date": "REMAINING STOCK", "Customer": "Vanda: " + (settings.V.st - uV), "Vanda": "Mineral: " + (settings.M.st - uM), "Mineral": "UMB: " + (settings.U.st - uU) });
-
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SalesLedger");
-        XLSX.writeFile(wb, "Sales_Report_Govt.xlsx");
-    }
-
     db.collection("settings").doc("main").onSnapshot(d => {
         if(d.exists()) {
             settings = d.data();
-            ['rtV','stV','rtM','stM','rtU','stU'].forEach(id => document.getElementById(id).value = settings[id.slice(-1)][id.slice(0,2)]);
+            document.getElementById('rtV').value = settings.V.rt; document.getElementById('stV').value = settings.V.st;
+            document.getElementById('rtM').value = settings.M.rt; document.getElementById('stM').value = settings.M.st;
+            document.getElementById('rtU').value = settings.U.rt; document.getElementById('stU').value = settings.U.st;
             render();
         }
     });
@@ -266,6 +248,9 @@
         records = s.docs.map(d => ({id:d.id, ...d.data()}));
         render();
     });
+
+    document.getElementById('date').valueAsDate = new Date();
 </script>
 </body>
-</html>
+    </html>
+    
