@@ -13,7 +13,7 @@
     <style>
         :root { 
             --primary: #1a73e8; --vanda: #673ab7; --mineral: #00bcd4; --umb: #795548; 
-            --success: #1e8e3e; --danger: #d93025; --bg: #f8f9fa; 
+            --success: #1e8e3e; --danger: #d93025; --whatsapp: #25D366; --bg: #f8f9fa; 
         }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #202124; }
         .header { background: white; padding: 15px 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
@@ -35,9 +35,11 @@
         label { display: block; font-size: 12px; font-weight: 600; color: #5f6368; margin-bottom: 5px; }
         input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px; box-sizing: border-box; }
         
-        .btn { padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; }
+        .btn { padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; justify-content: center; transition: 0.3s; text-decoration: none; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
+        .btn-whatsapp { background: var(--whatsapp); color: white; box-shadow: 0 4px 10px rgba(37,211,102,0.2); }
+        .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37,211,102,0.4); }
 
         /* Ledger Table */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -55,8 +57,11 @@
 <body>
 
 <div class="header no-print">
-    <h2 style="margin:0; color:var(--primary);"><i class="fas fa-university"></i> SYSTEM GOVT <span style="font-weight:300; font-size:16px;">| Pro ERP v3.2</span></h2>
+    <h2 style="margin:0; color:var(--primary);"><i class="fas fa-university"></i> SYSTEM GOVT <span style="font-weight:300; font-size:16px;">| Pro ERP v3.3</span></h2>
     <div style="display:flex; gap:10px;">
+        <a href="https://wa.me/923037651122" target="_blank" class="btn btn-whatsapp">
+            <i class="fab fa-whatsapp"></i> WhatsApp Marketing
+        </a>
         <button class="btn btn-success" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Export Backup</button>
         <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print PDF</button>
     </div>
@@ -265,4 +270,5 @@
     document.getElementById('date').valueAsDate = new Date();
 </script>
 </body>
-</html>
+                </html>
+                
