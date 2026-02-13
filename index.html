@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM GOVT | Enterprise Resource Planning</title>
+    <title>SYSTEM GOVT | Enterprise ERP v2.0</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -12,34 +12,35 @@
     <style>
         :root { 
             --primary: #2563eb; --vanda: #7c3aed; --mineral: #0891b2; --umb: #92400e; 
-            --success: #059669; --danger: #dc2626; --bg: #f8fafc; --card: #ffffff;
+            --success: #059669; --danger: #dc2626; --bg: #f1f5f9; --card: #ffffff;
         }
-         
         body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: #1e293b; }
-        .header { background: var(--card); padding: 1rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: var(--card); padding: 1.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; border-left: 5px solid var(--bc); }
-        .val { font-size: 2rem; font-weight: 700; margin: 0.5rem 0; }
-        .sold-pill { background: #f0fdf4; color: var(--success); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; }
-        .glass-card { background: var(--card); padding: 2rem; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 2rem; }
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
-        input { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; box-sizing: border-box; }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; justify-content: center; transition: 0.2s; }
-        .table-container { background: var(--card); border-radius: 1rem; border: 1px solid #e2e8f0; overflow-x: auto; }
+        .header { background: var(--card); padding: 1rem 2rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .container { max-width: 1280px; margin: 1.5rem auto; padding: 0 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--card); padding: 1.25rem; border-radius: 0.75rem; border-left: 5px solid var(--bc); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .val { font-size: 1.8rem; font-weight: 800; margin: 0.4rem 0; color: var(--danger); }
+        .sold-pill { background: #f0fdf4; color: var(--success); padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; border: 1px solid #dcfce7; }
+        .glass-card { background: var(--card); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 1.5rem; border: 1px solid #e2e8f0; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        label { font-size: 0.8rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.3rem; }
+        input { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 0.4rem; box-sizing: border-box; font-size: 0.9rem; }
+        .btn { padding: 0.7rem 1.2rem; border-radius: 0.5rem; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.5rem; transition: 0.2s; justify-content: center; }
+        .table-container { background: var(--card); border-radius: 0.75rem; border: 1px solid #e2e8f0; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th, td { padding: 1rem; border-bottom: 1px solid #f1f5f9; text-align: left; }
-        .badge-item { padding: 0.2rem 0.5rem; border-radius: 0.3rem; color: white; font-size: 0.75rem; margin-right: 3px; }
+        th { background: #f8fafc; padding: 0.8rem; font-size: 0.75rem; color: #64748b; text-transform: uppercase; text-align: left; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 0.8rem; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .badge-item { padding: 0.2rem 0.5rem; border-radius: 0.3rem; color: white; font-size: 0.7rem; font-weight: 800; margin-right: 4px; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
 <div class="header no-print">
-    <h2><i class="fas fa-landmark"></i> SYSTEM GOVT | <small>ERP v2.0</small></h2>
+    <h2 style="margin:0; color:var(--primary);"><i class="fas fa-landmark"></i> SYSTEM GOVT <small style="font-weight:400; color:#94a3b8;">| ERP v2.0</small></h2>
     <div style="display:flex; gap:10px;">
-        <button class="btn" style="background:#10b981; color:white;" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Export Backup</button>
-        <button class="btn" style="background:var(--primary); color:white;" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
+        <button class="btn" style="background:#059669; color:white; font-size:0.8rem;" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> Export Backup</button>
+        <button class="btn" style="background:var(--primary); color:white; font-size:0.8rem;" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
     </div>
 </div>
 
@@ -47,59 +48,70 @@
     <div class="stats-grid no-print">
         <div class="stat-card" style="--bc: var(--vanda)">
             <h4>Vanda Remaining</h4>
-            <div class="val" id="dispV" style="color:var(--danger)">0</div>
-            <span class="sold-pill">Sold: <span id="totV">0</span></span>
-            <div style="margin-top:10px; font-size:12px;">Limit: <input type="number" id="stV" style="width:60px; padding:2px;"> Rate: 1384</div>
-            <button class="btn" style="font-size:10px; padding:4px; margin-top:5px; width:100%;" onclick="upSet()">Sync Cloud</button>
+            <div class="val" id="dispV">0</div>
+            <span class="sold-pill">Total Sold: <span id="totV">0</span></span>
+            <div style="margin-top:10px; font-size:11px; display:flex; justify-content:space-between;">
+                <span>Rate: <b>1384</b></span>
+                <span>Limit: <input type="number" id="stV" style="width:50px; padding:2px;"></span>
+            </div>
+            <button class="btn" style="font-size:0.7rem; padding:4px; margin-top:8px; width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;" onclick="upSet()">Sync Cloud</button>
         </div>
         <div class="stat-card" style="--bc: var(--mineral)">
             <h4>Mineral Remaining</h4>
-            <div class="val" id="dispM" style="color:var(--danger)">0</div>
-            <span class="sold-pill">Sold: <span id="totM">0</span></span>
-            <div style="margin-top:10px; font-size:12px;">Limit: <input type="number" id="stM" style="width:60px; padding:2px;"> Rate: 98</div>
-            <button class="btn" style="font-size:10px; padding:4px; margin-top:5px; width:100%;" onclick="upSet()">Sync Cloud</button>
+            <div class="val" id="dispM">0</div>
+            <span class="sold-pill">Total Sold: <span id="totM">0</span></span>
+            <div style="margin-top:10px; font-size:11px; display:flex; justify-content:space-between;">
+                <span>Rate: <b>98</b></span>
+                <span>Limit: <input type="number" id="stM" style="width:50px; padding:2px;"></span>
+            </div>
+            <button class="btn" style="font-size:0.7rem; padding:4px; margin-top:8px; width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;" onclick="upSet()">Sync Cloud</button>
         </div>
         <div class="stat-card" style="--bc: var(--umb)">
             <h4>UMB Remaining</h4>
-            <div class="val" id="dispU" style="color:var(--danger)">0</div>
-            <span class="sold-pill">Sold: <span id="totU">0</span></span>
-            <div style="margin-top:10px; font-size:12px;">Limit: <input type="number" id="stU" style="width:60px; padding:2px;"> Rate: 327</div>
-            <button class="btn" style="font-size:10px; padding:4px; margin-top:5px; width:100%;" onclick="upSet()">Sync Cloud</button>
+            <div class="val" id="dispU">0</div>
+            <span class="sold-pill">Total Sold: <span id="totU">0</span></span>
+            <div style="margin-top:10px; font-size:11px; display:flex; justify-content:space-between;">
+                <span>Rate: <b>327</b></span>
+                <span>Limit: <input type="number" id="stU" style="width:50px; padding:2px;"></span>
+            </div>
+            <button class="btn" style="font-size:0.7rem; padding:4px; margin-top:8px; width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;" onclick="upSet()">Sync Cloud</button>
         </div>
     </div>
 
     <div class="glass-card no-print">
         <div class="grid-4">
             <div><label>Date</label><input type="date" id="date"></div>
-            <div><label>Name</label><input type="text" id="name"></div>
-            <div><label>Phone</label><input type="text" id="phone"></div>
-            <div><label>CNIC</label><input type="text" id="cnic"></div>
+            <div><label>Customer Name</label><input type="text" id="name"></div>
+            <div><label>Phone Number</label><input type="text" id="phone"></div>
+            <div><label>CNIC (Optional)</label><input type="text" id="cnic"></div>
         </div>
-        <div style="margin:15px 0;"><label>Address</label><input type="text" id="address"></div>
+        <div style="margin:12px 0;"><label>Complete Address</label><input type="text" id="address"></div>
         <div class="grid-4">
             <div><label>Vanda Qty</label><input type="number" id="qtyV" oninput="autoBill()" value="0"></div>
             <div><label>Mineral Qty</label><input type="number" id="qtyM" oninput="autoBill()" value="0"></div>
             <div><label>UMB Qty</label><input type="number" id="qtyU" oninput="autoBill()" value="0"></div>
-            <div><label>Total Bill</label><input type="number" id="totalBill" readonly style="background:#eef2ff;"></div>
+            <div><label>Total Receivable</label><input type="number" id="totalBill" readonly style="background:#eff6ff; font-weight:800; color:var(--primary);"></div>
         </div>
-        <div style="margin-top:15px;"><label>Payment Received</label><input type="number" id="payment" value="0"></div>
+        <div style="margin-top:12px;"><label>Payment Received</label><input type="number" id="payment" value="0"></div>
         <input type="hidden" id="editId">
-        <button class="btn" style="background:var(--primary); color:white; width:100%; margin-top:20px;" onclick="save()"><i class="fas fa-save"></i> Save Transaction</button>
-        <button class="btn" style="width:100%; margin-top:10px; background:#f1f5f9;" onclick="resetForm()">Reset Form</button>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="btn" style="background:var(--primary); color:white; flex:2;" onclick="save()"><i class="fas fa-check-circle"></i> Save Transaction</button>
+            <button class="btn" style="background:#f1f5f9; color:#64748b; flex:1;" onclick="resetForm()">Reset</button>
+        </div>
     </div>
 
     <div class="table-container">
-        <div style="padding:1rem;" class="no-print">
-            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Filter by name or phone..." style="width:300px;">
+        <div style="padding:1rem; border-bottom:1px solid #f1f5f9;" class="no-print">
+            <input type="text" id="search" onkeyup="render()" placeholder="🔍 Search by name, phone or address..." style="width:100%; max-width:400px;">
         </div>
         <table>
             <thead>
                 <tr>
-                    <th>Date</th><th>Customer Info</th><th>Items</th><th>Total</th><th>Paid</th><th>Balance</th><th class="no-print">Action</th>
+                    <th>Date</th><th>Customer Info</th><th>Items Sold</th><th>Total Bill</th><th>Paid</th><th>Balance</th><th class="no-print">Action</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
-            <tfoot id="tableFoot"></tfoot>
+            <tfoot id="tableFoot" style="background:#f8fafc; font-weight:800;"></tfoot>
         </table>
     </div>
 </div>
@@ -113,14 +125,20 @@
     let records = [], settings = { V:{st:2000}, M:{st:2000}, U:{st:2000} };
 
     function autoBill() {
-        const qV = parseInt(document.getElementById('qtyV').value)||0, qM = parseInt(document.getElementById('qtyM').value)||0, qU = parseInt(document.getElementById('qtyU').value)||0;
+        const qV = parseInt(document.getElementById('qtyV').value)||0, 
+              qM = parseInt(document.getElementById('qtyM').value)||0, 
+              qU = parseInt(document.getElementById('qtyU').value)||0;
         document.getElementById('totalBill').value = (qV*rates.V) + (qM*rates.M) + (qU*rates.U);
     }
 
     async function upSet() {
-        const s = { V:{st:parseInt(document.getElementById('stV').value)}, M:{st:parseInt(document.getElementById('stM').value)}, U:{st:parseInt(document.getElementById('stU').value)} };
+        const s = { 
+            V:{st:parseInt(document.getElementById('stV').value)||2000}, 
+            M:{st:parseInt(document.getElementById('stM').value)||2000}, 
+            U:{st:parseInt(document.getElementById('stU').value)||2000} 
+        };
         await db.collection("settings").doc("main").set(s);
-        alert("Stock Updated!");
+        alert("Stock Cloud Updated!");
     }
 
     async function save() {
@@ -131,53 +149,85 @@
             qtyV: parseInt(document.getElementById('qtyV').value)||0, qtyM: parseInt(document.getElementById('qtyM').value)||0, qtyU: parseInt(document.getElementById('qtyU').value)||0,
             total: parseInt(document.getElementById('totalBill').value)||0, pay: parseInt(document.getElementById('payment').value)||0
         };
+        if(!data.name) return alert("Customer Name is required!");
         id ? await db.collection("records").doc(id).update(data) : await db.collection("records").add(data);
         resetForm();
     }
 
     function render() {
         const term = document.getElementById('search').value.toLowerCase();
-        const filtered = records.filter(r => r.name.toLowerCase().includes(term) || r.phone.includes(term));
+        const filtered = records.filter(r => r.name.toLowerCase().includes(term) || r.phone.includes(term) || r.address.toLowerCase().includes(term));
+        
         let uV=0, uM=0, uU=0, gB=0, gP=0;
         records.forEach(r => { uV+=r.qtyV; uM+=r.qtyM; uU+=r.qtyU; gB+=r.total; gP+=r.pay; });
 
-        document.getElementById('totV').innerText = uV; document.getElementById('totM').innerText = uM; document.getElementById('totU').innerText = uU;
-        document.getElementById('dispV').innerText = settings.V.st - uV; document.getElementById('dispM').innerText = settings.M.st - uM; document.getElementById('dispU').innerText = settings.U.st - uU;
+        document.getElementById('totV').innerText = uV; 
+        document.getElementById('totM').innerText = uM; 
+        document.getElementById('totU').innerText = uU;
+        document.getElementById('dispV').innerText = settings.V.st - uV; 
+        document.getElementById('dispM').innerText = settings.M.st - uM; 
+        document.getElementById('dispU').innerText = settings.U.st - uU;
 
         let h = '';
         filtered.forEach(r => {
             const bal = r.total - r.pay;
-            h += `<tr><td>${r.date}</td><td><b>${r.name}</b><br>${r.phone}</td><td>
-                ${r.qtyV?`<span class="badge-item" style="background:var(--vanda)">V:${r.qtyV}</span>`:''}
-                ${r.qtyM?`<span class="badge-item" style="background:var(--mineral)">M:${r.qtyM}</span>`:''}
-                ${r.qtyU?`<span class="badge-item" style="background:var(--umb)">U:${r.qtyU}</span>`:''}
-            </td><td>Rs.${r.total}</td><td>Rs.${r.pay}</td><td style="color:red">Rs.${bal}</td>
-            <td class="no-print"><i class="fas fa-edit" onclick="edit('${r.id}')" style="cursor:pointer; color:var(--primary); margin-right:10px;"></i><i class="fas fa-trash" onclick="del('${r.id}')" style="cursor:pointer; color:var(--danger);"></i></td></tr>`;
+            h += `<tr>
+                <td>${r.date}</td>
+                <td><b>${r.name}</b><br><small>${r.phone}</small></td>
+                <td>
+                    ${r.qtyV?`<span class="badge-item" style="background:var(--vanda)">V: ${r.qtyV}</span>`:''}
+                    ${r.qtyM?`<span class="badge-item" style="background:var(--mineral)">M: ${r.qtyM}</span>`:''}
+                    ${r.qtyU?`<span class="badge-item" style="background:var(--umb)">U: ${r.qtyU}</span>`:''}
+                </td>
+                <td>Rs. ${r.total.toLocaleString()}</td>
+                <td style="color:var(--success)">Rs. ${r.pay.toLocaleString()}</td>
+                <td style="color:var(--danger)">Rs. ${bal.toLocaleString()}</td>
+                <td class="no-print">
+                    <button onclick="edit('${r.id}')" style="border:none; background:#eff6ff; color:var(--primary); padding:6px; border-radius:4px; cursor:pointer; margin-right:5px;"><i class="fas fa-edit"></i></button>
+                    <button onclick="del('${r.id}')" style="border:none; background:#fef2f2; color:var(--danger); padding:6px; border-radius:4px; cursor:pointer;"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>`;
         });
         document.getElementById('tableBody').innerHTML = h;
-        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3">TOTALS</td><td>Rs.${gB}</td><td>Rs.${gP}</td><td>Rs.${gB-gP}</td><td></td></tr>`;
+        document.getElementById('tableFoot').innerHTML = `<tr><td colspan="3" style="text-align:right">CUMULATIVE TOTALS:</td><td>Rs. ${gB.toLocaleString()}</td><td>Rs. ${gP.toLocaleString()}</td><td>Rs. ${(gB-gP).toLocaleString()}</td><td class="no-print"></td></tr>`;
     }
 
-    async function del(id) { if(confirm("Delete?")) await db.collection("records").doc(id).delete(); }
+    async function del(id) { if(confirm("Are you sure to delete?")) await db.collection("records").doc(id).delete(); }
 
     function edit(id) {
         const r = records.find(x => x.id === id);
         ['date','name','phone','cnic','address','qtyV','qtyM','qtyU','payment'].forEach(f => document.getElementById(f).value = r[f]);
         document.getElementById('editId').value = r.id;
-        autoBill(); window.scrollTo(0,100);
+        autoBill(); window.scrollTo({top: 200, behavior: 'smooth'});
     }
 
     function downloadExcel() {
-        const ws = XLSX.utils.json_to_sheet(records);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Sales");
+        const ws = XLSX.utils.json_to_sheet(records.map(r => ({Date: r.date, Customer: r.name, Vanda: r.qtyV, Mineral: r.qtyM, UMB: r.qtyU, Total: r.total, Paid: r.pay, Balance: r.total-r.pay})));
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Inventory");
         XLSX.writeFile(wb, "ERP_Backup.xlsx");
     }
 
-    function resetForm() { document.querySelectorAll('input').forEach(i => i.id !== 'date' ? i.value = '' : null); document.getElementById('editId').value = ''; document.getElementById('date').valueAsDate = new Date(); autoBill(); }
+    function resetForm() {
+        ['editId','name','phone','cnic','address','qtyV','qtyM','qtyU','totalBill','payment'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('date').valueAsDate = new Date();
+        autoBill();
+    }
 
-    db.collection("settings").doc("main").onSnapshot(d => { if(d.exists()) { settings = d.data(); document.getElementById('stV').value = settings.V.st; document.getElementById('stM').value = settings.M.st; document.getElementById('stU').value = settings.U.st; render(); } });
-    db.collection("records").orderBy("date","desc").onSnapshot(s => { records = s.docs.map(d => ({id:d.id, ...d.data()})); render(); });
+    db.collection("settings").doc("main").onSnapshot(d => {
+        if(d.exists()) {
+            settings = d.data();
+            document.getElementById('stV').value = settings.V.st;
+            document.getElementById('stM').value = settings.M.st;
+            document.getElementById('stU').value = settings.U.st;
+            render();
+        }
+    });
+
+    db.collection("records").orderBy("date","desc").onSnapshot(s => {
+        records = s.docs.map(d => ({id:d.id, ...d.data()}));
+        render();
+    });
+
     document.getElementById('date').valueAsDate = new Date();
 </script>
 </body>
