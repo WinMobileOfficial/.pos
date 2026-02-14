@@ -290,8 +290,7 @@
     }
 
     function resetForm() { document.querySelectorAll('input').forEach(i => i.id !== 'date' ? i.value = '' : null); document.getElementById('editId').value = ''; document.getElementById('date').valueAsDate = new Date(); autoBill(); }
-
-    function downloadExcel() {
+function downloadExcel() {
     let totalV = 0, totalM = 0, totalU = 0, totalB = 0, totalP = 0;
 
     const excelData = records.map(r => {
@@ -304,6 +303,7 @@
         return {
             'Date': r.date,
             'Customer Name': r.name,
+            'Address': r.address || 'N/A', // Address column yahan add kiya gaya hai
             'Phone Number': r.phone,
             'Vanda Quantity': r.qtyV || 0,
             'Mineral Quantity': r.qtyM || 0,
@@ -314,10 +314,11 @@
         };
     });
 
-    // Sub se niche Grand Total ki row
+    // Grand Total ki row mein bhi Address ka khali cell add kiya hai
     excelData.push({
         'Date': 'GRAND TOTAL',
         'Customer Name': '',
+        'Address': '', 
         'Phone Number': '',
         'Vanda Quantity': totalV,
         'Mineral Quantity': totalM,
@@ -332,9 +333,7 @@
     XLSX.utils.book_append_sheet(wb, ws, "GM_Sales_Report");
     
     XLSX.writeFile(wb, "GM_Agency_Detailed_Report.xlsx");
-}
-
-
+       }
     db.collection("records").orderBy("date","desc").onSnapshot(s => { records = s.docs.map(d => ({id:d.id, ...d.data()})); render(); });
     db.collection("expenses").onSnapshot(s => {
         expenses = s.docs.map(d => d.data());
