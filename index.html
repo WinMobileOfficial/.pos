@@ -292,12 +292,48 @@
     function resetForm() { document.querySelectorAll('input').forEach(i => i.id !== 'date' ? i.value = '' : null); document.getElementById('editId').value = ''; document.getElementById('date').valueAsDate = new Date(); autoBill(); }
 
     function downloadExcel() {
-        const excelData = records.map(r => ({
-            'Date': r.date, 'Customer': r.name, 'Phone': r.phone, 'Total Bill': r.total, 'Paid': r.pay, 'Due Balance': r.total - r.pay
-        }));
-        const ws = XLSX.utils.json_to_sheet(excelData); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Sales");
-        XLSX.writeFile(wb, "GM_Agency_Report.xlsx");
-    }
+    let totalV = 0, totalM = 0, totalU = 0, totalB = 0, totalP = 0;
+
+    const excelData = records.map(r => {
+        totalV += (r.qtyV || 0);
+        totalM += (r.qtyM || 0);
+        totalU += (r.qtyU || 0);
+        totalB += (r.total || 0);
+        totalP += (r.pay || 0);
+
+        return {
+            'Date': r.date,
+            'Customer Name': r.name,
+            'Phone Number': r.phone,
+            'Vanda Quantity': r.qtyV || 0,
+            'Mineral Quantity': r.qtyM || 0,
+            'UMB Quantity': r.qtyU || 0,
+            'Total Bill (Rs.)': r.total,
+            'Paid Amount (Rs.)': r.pay,
+            'Due Balance (Rs.)': r.total - r.pay
+        };
+    });
+
+    // Sub se niche Grand Total ki row
+    excelData.push({
+        'Date': 'GRAND TOTAL',
+        'Customer Name': '',
+        'Phone Number': '',
+        'Vanda Quantity': totalV,
+        'Mineral Quantity': totalM,
+        'UMB Quantity': totalU,
+        'Total Bill (Rs.)': totalB,
+        'Paid Amount (Rs.)': totalP,
+        'Due Balance (Rs.)': totalB - totalP
+    });
+
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "GM_Sales_Report");
+    
+    XLSX.writeFile(wb, "GM_Agency_Detailed_Report.xlsx");
+}
+
 
     db.collection("records").orderBy("date","desc").onSnapshot(s => { records = s.docs.map(d => ({id:d.id, ...d.data()})); render(); });
     db.collection("expenses").onSnapshot(s => {
